@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Gindri Pilates</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f7f7; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-box { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 300px; text-align: center; }
+        
+        /* Estilo da Logo */
+        .logo { max-width: 180px; height: auto; margin-bottom: 20px; }
+        
+        p { color: #888; font-size: 14px; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 1px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; outline: none; }
+        input:focus { border-color: #20B2AA; }
+        
+        .btn { width: 100%; padding: 12px; background: #20B2AA; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px;}
+        .btn:hover { background: #1a938c; }
+        
+        .dica { font-size: 11px; color: #bbb; margin-top: 25px; line-height: 1.5; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <img src="/logo.png" alt="Estúdio Gindri Pilates" class="logo">
+        
+        <p>Acesso ao Sistema</p>
+        
+        <form action="/autenticar" method="POST">
+            <input type="text" name="usuario" placeholder="Usuário" required>
+            <input type="password" name="senha" placeholder="Senha" required>
+            <button type="submit" class="btn">ENTRAR</button>
+        </form>
+        
+        <div class="dica">
+            Utilize as credenciais de Instrutora ou Aluno <br>
+            para acessar seu painel específico.
+        </div>
+    </div>
+</body>
+</html>

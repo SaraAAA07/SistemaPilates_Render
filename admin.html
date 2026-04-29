@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Painel Alice Hemann</title>
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="logo-container">
+            <img src="/logo.png" alt="Logo">
+        </div>
+        <a href="/admin" class="nav-link active">Painel</a>
+        <a href="/listar" class="nav-link">Alunos</a>
+        <a href="/cadastro" class="nav-link">Novo Cadastro</a>
+        <a href="/" class="nav-link" style="margin-top: auto; color: var(--danger);">🚪 Sair</a>
+    </nav>
+
+    <main class="main-content">
+        <div class="header">
+            <p style="color: #64748b; margin: 0;">terça-feira, 28 de abril</p>
+            <h1>Bom dia, Alice</h1>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card"><small>Alunos Ativos</small><div>4</div></div>
+            <div class="stat-card"><small>Aulas Hoje</small><div>4</div></div>
+            <div class="stat-card"><small>Inadimplentes</small><div style="color: var(--danger)">1</div></div>
+            <div class="stat-card"><small>Concluídas</small><div>0</div></div>
+        </div>
+
+        <div class="content-card">
+            <h3>Agenda de Hoje</h3>
+            <table>
+                <tr><th>Horário</th><th>Nome</th><th>Modalidade</th></tr>
+                <tr><td>08:00</td><td>Maria Clara Oliveira</td><td>Pilates</td></tr>
+                <tr><td>09:00</td><td>João Pedro Santos</td><td>Pilates</td></tr>
+            </table>
+        </div>
+    </main>
+</body>
+</html>
