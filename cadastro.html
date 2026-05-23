@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Novo Cadastro - Gindri Pilates</title>
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="logo-container">
+            <img src="/logo.png" alt="Logo">
+        </div>
+        <a href="/admin" class="nav-link">Painel</a>
+        <a href="/listar" class="nav-link">Alunos</a>
+        <a href="/cadastro" class="nav-link active">Novo Cadastro</a>
+        <a href="/" class="nav-link" style="margin-top: auto; color: var(--danger);">🚪 Sair</a>
+    </nav>
+
+    <main class="main-content">
+        <div class="header">
+            <p id="data-cabecalho" style="color: #64748b; margin: 0;"></p>
+            <h1>Cadastrar Novo Aluno</h1>
+        </div>
+
+        <div class="content-card">
+            <form action="/salvar" method="POST">
+                
+                <div class="form-group">
+                    <label for="nome" style="color: #64748b; font-size: 14px;">Nome Completo</label>
+                    <input type="text" id="nome" name="nome" placeholder="Ex: Maria da Silva" required>
+                </div>
+
+                <div class="form-group" style="display: flex; gap: 20px;">
+                    <div style="flex: 1;">
+                        <label for="patologia" style="color: #64748b; font-size: 14px;">Patologia / Queixa Principal</label>
+                        <input type="text" id="patologia" name="patologia" placeholder="Ex: Dor lombar, Hérnia..." required>
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="emDia" style="color: #64748b; font-size: 14px;">Status do Pagamento</label>
+                        <select id="emDia" name="emDia" required>
+                            <option value="true">Pagamento em Dia</option>
+                            <option value="false">Pendente / Atrasado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; text-align: right;">
+                    <button type="submit" class="btn-primary" style="width: auto;">💾 Salvar Cadastro no Banco</button>
+                </div>
+            </form>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 Gindri Pilates. Todos os direitos reservados.</p>
+        </footer>
+    </main>
+
+    <script>
+        const opcoesData = { weekday: 'long', day: 'numeric', month: 'long' };
+        document.getElementById('data-cabecalho').innerText = new Date().toLocaleDateString('pt-BR', opcoesData);
+    </script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+services:
+  - type: web
+    name: sistema-pilates
+    env: docker
