@@ -197,119 +197,298 @@ public class ServidorPilates {
 
     static class EditarHandler implements HttpHandler {
 
-        public void handle(HttpExchange t) throws IOException {
+    public void handle(HttpExchange t) throws IOException {
 
-            if (t.getRequestMethod().equals("GET")) {
+        // =========================
+        // ABRIR TELA DE EDIÇÃO
+        // =========================
 
-                String id = t.getRequestURI().getQuery().split("=")[1];
+        if (t.getRequestMethod().equals("GET")) {
 
-                List<String> alunos = Files.readAllLines(Paths.get(ARQUIVO));
+            String id = t.getRequestURI().getQuery().split("=")[1];
 
-                for (String aluno : alunos) {
+            List<String> alunos = Files.readAllLines(Paths.get(ARQUIVO));
 
-                    String[] p = aluno.split(";");
+            for (String aluno : alunos) {
 
-                    if (p[0].equals(id)) {
+                String[] p = aluno.split(";");
 
-                        String html =
-                            "<html>" +
-                            "<head>" +
-                            "<meta charset='UTF-8'>" +
-                            "<link rel='stylesheet' href='/style.css'>" +
-                            "</head>" +
-                            "<body>" +
+                if (p[0].equals(id)) {
 
-                            "<main class='main-content'>" +
+                    String acesso = p.length >= 5 ? p[4] : "nao";
+                    String usuario = p.length >= 6 ? p[5] : "";
+                    String senha = p.length >= 7 ? p[6] : "";
 
-                            "<div class='content-card'>" +
+                    String frequencia = p.length >= 8 ? p[7] : "";
+                    String pontos = p.length >= 9 ? p[8] : "0";
+                    String pagamento = p.length >= 10 ? p[9] : "Pendente";
+                    String aulas = p.length >= 11 ? p[10] : "0";
+                    String horarios = p.length >= 12 ? p[11] : "";
+                    String modalidades = p.length >= 13 ? p[12] : "";
+                    String tipoPrincipal = p.length >= 14 ? p[13] : "";
 
-                            "<h1>Editar Aluno</h1>" +
+                    String html =
 
-                            "<form method='POST' action='/editar'>" +
+                        "<html>" +
 
-                            "<input type='hidden' name='id' value='" + p[0] + "'>" +
+                        "<head>" +
 
-                            "<input type='text' name='nome' value='" + p[1] + "' placeholder='Nome'>" +
+                        "<meta charset='UTF-8'>" +
 
-                            "<input type='text' name='patologia' value='" + p[2] + "' placeholder='Patologia'>" +
+                        "<link rel='stylesheet' href='/style.css'>" +
 
-                            "<select name='emDia'>" +
-                            "<option value='true'>Em dia</option>" +
-                            "<option value='false'>Pendente</option>" +
-                            "</select>" +
+                        "<title>Editar aluno</title>" +
 
-                            "<input type='text' name='frequencia' value='" + (p.length >= 8 ? p[7] : "") + "' placeholder='Frequência'>" +
+                        "</head>" +
 
-                            "<input type='number' name='pontos' value='" + (p.length >= 9 ? p[8] : "0") + "' placeholder='Pontos'>" +
+                        "<body>" +
 
-                            "<input type='text' name='pagamento' value='" + (p.length >= 10 ? p[9] : "") + "' placeholder='Pagamento'>" +
+                        "<main class='main-content'>" +
 
-                            "<input type='number' name='aulasRealizadas' value='" + (p.length >= 11 ? p[10] : "0") + "' placeholder='Aulas realizadas'>" +
+                        "<div class='content-card'>" +
 
-                            "<textarea name='datasAulas'>" + (p.length >= 12 ? p[11] : "") + "</textarea>" +
+                        "<h1>Editar aluno</h1>" +
 
-                            "<textarea name='catalogoAulas'>" + (p.length >= 13 ? p[12] : "") + "</textarea>" +
+                        "<form method='POST' action='/editar'>" +
 
-                            "<button class='btn-primary'>Salvar</button>" +
+                        "<input type='hidden' name='id' value='" + p[0] + "'>" +
 
-                            "</form>" +
+                        // =========================
+                        // NOME
+                        // =========================
 
-                            "</div>" +
+                        "<label>Nome do aluno</label>" +
 
-                            "</main>" +
+                        "<input type='text' name='nome' value='" + p[1] + "' placeholder='Nome do aluno'>" +
 
-                            "</body>" +
+                        // =========================
+                        // PATOLOGIA
+                        // =========================
 
-                            "</html>";
+                        "<label>Patologia</label>" +
 
-                        responder(t, html);
+                        "<input type='text' name='patologia' value='" + p[2] + "' placeholder='Patologia'>" +
 
-                        return;
-                    }
+                        // =========================
+                        // STATUS
+                        // =========================
+
+                        "<label>Status financeiro</label>" +
+
+                        "<select name='emDia'>" +
+
+                        "<option value='true'" + (p[3].equals("true") ? " selected" : "") + ">Em dia</option>" +
+
+                        "<option value='false'" + (p[3].equals("false") ? " selected" : "") + ">Pendente</option>" +
+
+                        "</select>" +
+
+                        // =========================
+                        // ACESSO
+                        // =========================
+
+                        "<label>Permitir acesso ao sistema?</label>" +
+
+                        "<select name='acesso'>" +
+
+                        "<option value='sim'" + (acesso.equals("sim") ? " selected" : "") + ">Sim</option>" +
+
+                        "<option value='nao'" + (acesso.equals("nao") ? " selected" : "") + ">Não</option>" +
+
+                        "</select>" +
+
+                        // =========================
+                        // LOGIN
+                        // =========================
+
+                        "<label>Usuário do aluno</label>" +
+
+                        "<input type='text' name='usuario' value='" + usuario + "' placeholder='Usuário'>" +
+
+                        "<label>Senha do aluno</label>" +
+
+                        "<input type='password' name='senha' value='" + senha + "' placeholder='Senha'>" +
+
+                        // =========================
+                        // FREQUÊNCIA
+                        // =========================
+
+                        "<label>Frequência semanal</label>" +
+
+                        "<select name='frequencia'>" +
+
+                        "<option " + (frequencia.equals("1x Semana") ? "selected" : "") + ">1x Semana</option>" +
+
+                        "<option " + (frequencia.equals("2x Semana") ? "selected" : "") + ">2x Semana</option>" +
+
+                        "<option " + (frequencia.equals("3x Semana") ? "selected" : "") + ">3x Semana</option>" +
+
+                        "<option " + (frequencia.equals("4x Semana") ? "selected" : "") + ">4x Semana</option>" +
+
+                        "<option " + (frequencia.equals("5x Semana") ? "selected" : "") + ">5x Semana</option>" +
+
+                        "</select>" +
+
+                        // =========================
+                        // PONTOS
+                        // =========================
+
+                        "<label>Pontos de fidelidade</label>" +
+
+                        "<input type='number' name='pontos' value='" + pontos + "'>" +
+
+                        // =========================
+                        // PAGAMENTO
+                        // =========================
+
+                        "<label>Status de pagamento</label>" +
+
+                        "<select name='pagamento'>" +
+
+                        "<option " + (pagamento.equals("Pago") ? "selected" : "") + ">Pago</option>" +
+
+                        "<option " + (pagamento.equals("Pendente") ? "selected" : "") + ">Pendente</option>" +
+
+                        "<option " + (pagamento.equals("Atrasado") ? "selected" : "") + ">Atrasado</option>" +
+
+                        "</select>" +
+
+                        // =========================
+                        // AULAS
+                        // =========================
+
+                        "<label>Quantidade de aulas realizadas</label>" +
+
+                        "<input type='number' name='aulasRealizadas' value='" + aulas + "'>" +
+
+                        // =========================
+                        // HORÁRIOS
+                        // =========================
+
+                        "<label>Dias e horários das aulas</label>" +
+
+                        "<textarea name='datasAulas' rows='4' placeholder='Ex: Segunda 08:00'>" +
+
+                        horarios +
+
+                        "</textarea>" +
+
+                        // =========================
+                        // MODALIDADES
+                        // =========================
+
+                        "<label>Modalidades selecionadas</label>" +
+
+                        "<textarea name='catalogoAulas' rows='4' placeholder='Ex: Pilates Solo, Funcional'>" +
+
+                        modalidades +
+
+                        "</textarea>" +
+
+                        // =========================
+                        // TIPO PRINCIPAL
+                        // =========================
+
+                        "<label>Tipo principal</label>" +
+
+                        "<select name='tipoPrincipal'>" +
+
+                        "<option " + (tipoPrincipal.equals("Pilates") ? "selected" : "") + ">Pilates</option>" +
+
+                        "<option " + (tipoPrincipal.equals("Funcional") ? "selected" : "") + ">Funcional</option>" +
+
+                        "</select>" +
+
+                        // =========================
+                        // BOTÃO
+                        // =========================
+
+                        "<button class='btn-primary' type='submit'>" +
+
+                        "Salvar alterações" +
+
+                        "</button>" +
+
+                        "</form>" +
+
+                        "</div>" +
+
+                        "</main>" +
+
+                        "</body>" +
+
+                        "</html>";
+
+                    responder(t, html);
+
+                    return;
                 }
-
-            } else {
-
-                Map<String, String> dados = formToMap(t);
-
-                List<String> alunos = Files.readAllLines(Paths.get(ARQUIVO));
-
-                List<String> novos = new ArrayList<>();
-
-                for (String aluno : alunos) {
-
-                    String[] p = aluno.split(";");
-
-                    if (p[0].equals(dados.get("id"))) {
-
-                        novos.add(
-                            p[0] + ";" +
-                            dados.get("nome") + ";" +
-                            dados.get("patologia") + ";" +
-                            dados.get("emDia") + ";" +
-                            dados.getOrDefault("acesso", "nao") + ";" +
-                            dados.getOrDefault("usuario", "") + ";" +
-                            dados.getOrDefault("senha", "") + ";" +
-                            dados.getOrDefault("frequencia", "") + ";" +
-                            dados.getOrDefault("pontos", "0") + ";" +
-                            dados.getOrDefault("pagamento", "") + ";" +
-                            dados.getOrDefault("aulasRealizadas", "0") + ";" +
-                            dados.getOrDefault("datasAulas", "") + ";" +
-                            dados.getOrDefault("catalogoAulas", "")
-                        );
-
-                    } else {
-
-                        novos.add(aluno);
-                    }
-                }
-
-                Files.write(Paths.get(ARQUIVO), novos);
-
-                redirect(t, "/listar");
             }
+
+        }
+
+        // =========================
+        // SALVAR ALTERAÇÕES
+        // =========================
+
+        else {
+
+            Map<String, String> dados = formToMap(t);
+
+            List<String> alunos = Files.readAllLines(Paths.get(ARQUIVO));
+
+            List<String> novos = new ArrayList<>();
+
+            for (String aluno : alunos) {
+
+                String[] p = aluno.split(";");
+
+                if (p[0].equals(dados.get("id"))) {
+
+                    novos.add(
+
+                        p[0] + ";" +
+
+                        dados.get("nome") + ";" +
+
+                        dados.get("patologia") + ";" +
+
+                        dados.get("emDia") + ";" +
+
+                        dados.getOrDefault("acesso", "nao") + ";" +
+
+                        dados.getOrDefault("usuario", "") + ";" +
+
+                        dados.getOrDefault("senha", "") + ";" +
+
+                        dados.getOrDefault("frequencia", "") + ";" +
+
+                        dados.getOrDefault("pontos", "0") + ";" +
+
+                        dados.getOrDefault("pagamento", "Pendente") + ";" +
+
+                        dados.getOrDefault("aulasRealizadas", "0") + ";" +
+
+                        dados.getOrDefault("datasAulas", "") + ";" +
+
+                        dados.getOrDefault("catalogoAulas", "") + ";" +
+
+                        dados.getOrDefault("tipoPrincipal", "")
+
+                    );
+
+                } else {
+
+                    novos.add(aluno);
+                }
+            }
+
+            Files.write(Paths.get(ARQUIVO), novos);
+
+            redirect(t, "/listar");
         }
     }
+}
 
     static class ListarHandler implements HttpHandler {
 
