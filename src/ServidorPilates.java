@@ -11,6 +11,8 @@ public class ServidorPilates {
 
     static final String ARQUIVO = "alunos.csv";
 
+    static String alunoLogado = "";
+
     public static void main(String[] args) throws Exception {
 
         criarArquivo();
@@ -33,6 +35,17 @@ public class ServidorPilates {
         servidor.createContext("/excluir", new ExcluirHandler());
         servidor.createContext("/editar", new EditarHandler());
 
+        servidor.createContext("/nomeAluno", exchange -> {
+
+            byte[] resp = alunoLogado.getBytes(StandardCharsets.UTF_8);
+
+            exchange.sendResponseHeaders(200, resp.length);
+
+            exchange.getResponseBody().write(resp);
+
+            exchange.close();
+        });
+
         servidor.start();
 
         System.out.println("Servidor online na porta " + porta);
@@ -47,8 +60,7 @@ public class ServidorPilates {
             Files.write(
                 path,
                 List.of(
-                    "1;Maria Silva;Dor lombar;true;sim;maria;123",
-                    "2;Carlos Souza;Hérnia cervical;false;nao;;"
+                    "1;Maria Silva;Dor lombar;true;sim;maria;123;2x Semana;120;Pago;10;Segunda 08:00|Quarta 08:00;Pilates Solo|Funcional"
                 )
             );
         }
@@ -108,7 +120,10 @@ public class ServidorPilates {
 
                     if (usuario.equals(usuarioAluno) && senha.equals(senhaAluno)) {
 
+                        alunoLogado = p[1];
+
                         redirect(t, "/aluno");
+
                         return;
                     }
                 }
@@ -138,7 +153,13 @@ public class ServidorPilates {
                 dados.get("emDia") + ";" +
                 dados.getOrDefault("acesso", "nao") + ";" +
                 dados.getOrDefault("usuario", "") + ";" +
-                dados.getOrDefault("senha", "");
+                dados.getOrDefault("senha", "") + ";" +
+                dados.getOrDefault("frequencia", "") + ";" +
+                dados.getOrDefault("pontos", "0") + ";" +
+                dados.getOrDefault("pagamento", "Pendente") + ";" +
+                dados.getOrDefault("aulasRealizadas", "0") + ";" +
+                dados.getOrDefault("datasAulas", "") + ";" +
+                dados.getOrDefault("catalogoAulas", "");
 
             alunos.add(linha);
 
@@ -178,7 +199,6 @@ public class ServidorPilates {
 
         public void handle(HttpExchange t) throws IOException {
 
-            // GET
             if (t.getRequestMethod().equals("GET")) {
 
                 String id = t.getRequestURI().getQuery().split("=")[1];
@@ -191,17 +211,12 @@ public class ServidorPilates {
 
                     if (p[0].equals(id)) {
 
-                        String acesso = p.length >= 5 ? p[4] : "nao";
-                        String usuario = p.length >= 6 ? p[5] : "";
-                        String senha = p.length >= 7 ? p[6] : "";
-
                         String html =
                             "<html>" +
                             "<head>" +
                             "<meta charset='UTF-8'>" +
                             "<link rel='stylesheet' href='/style.css'>" +
                             "</head>" +
-
                             "<body>" +
 
                             "<main class='main-content'>" +
@@ -223,20 +238,19 @@ public class ServidorPilates {
                             "<option value='false'>Pendente</option>" +
                             "</select>" +
 
-                            "<br><br>" +
+                            "<input type='text' name='frequencia' value='" + (p.length >= 8 ? p[7] : "") + "' placeholder='Frequência'>" +
 
-                            "<label>Permitir acesso?</label>" +
+                            "<input type='number' name='pontos' value='" + (p.length >= 9 ? p[8] : "0") + "' placeholder='Pontos'>" +
 
-                            "<select name='acesso'>" +
-                            "<option value='sim'" + (acesso.equals("sim") ? " selected" : "") + ">Sim</option>" +
-                            "<option value='nao'" + (acesso.equals("nao") ? " selected" : "") + ">Não</option>" +
-                            "</select>" +
+                            "<input type='text' name='pagamento' value='" + (p.length >= 10 ? p[9] : "") + "' placeholder='Pagamento'>" +
 
-                            "<input type='text' name='usuario' value='" + usuario + "' placeholder='Usuário'>" +
+                            "<input type='number' name='aulasRealizadas' value='" + (p.length >= 11 ? p[10] : "0") + "' placeholder='Aulas realizadas'>" +
 
-                            "<input type='password' name='senha' value='" + senha + "' placeholder='Senha'>" +
+                            "<textarea name='datasAulas'>" + (p.length >= 12 ? p[11] : "") + "</textarea>" +
 
-                            "<button class='btn-primary' type='submit'>Salvar Alterações</button>" +
+                            "<textarea name='catalogoAulas'>" + (p.length >= 13 ? p[12] : "") + "</textarea>" +
+
+                            "<button class='btn-primary'>Salvar</button>" +
 
                             "</form>" +
 
@@ -256,7 +270,6 @@ public class ServidorPilates {
 
             } else {
 
-                // POST
                 Map<String, String> dados = formToMap(t);
 
                 List<String> alunos = Files.readAllLines(Paths.get(ARQUIVO));
@@ -276,7 +289,13 @@ public class ServidorPilates {
                             dados.get("emDia") + ";" +
                             dados.getOrDefault("acesso", "nao") + ";" +
                             dados.getOrDefault("usuario", "") + ";" +
-                            dados.getOrDefault("senha", "")
+                            dados.getOrDefault("senha", "") + ";" +
+                            dados.getOrDefault("frequencia", "") + ";" +
+                            dados.getOrDefault("pontos", "0") + ";" +
+                            dados.getOrDefault("pagamento", "") + ";" +
+                            dados.getOrDefault("aulasRealizadas", "0") + ";" +
+                            dados.getOrDefault("datasAulas", "") + ";" +
+                            dados.getOrDefault("catalogoAulas", "")
                         );
 
                     } else {
@@ -319,9 +338,21 @@ public class ServidorPilates {
                     .append("<td>").append(p[2]).append("</td>")
                     .append("<td>").append(status).append("</td>")
                     .append("<td>").append(acesso).append("</td>")
+                    .append("<td>").append(p.length >= 8 ? p[7] : "").append("</td>")
+                    .append("<td>").append(p.length >= 9 ? p[8] : "0").append("</td>")
+                    .append("<td>").append(p.length >= 10 ? p[9] : "").append("</td>")
+                    .append("<td>").append(p.length >= 11 ? p[10] : "").append("</td>")
+                    .append("<td>").append(p.length >= 12 ? p[11] : "").append("</td>")
+                    .append("<td>").append(p.length >= 13 ? p[12] : "").append("</td>")
                     .append("<td>")
-                    .append("<a class='action-btn edit-btn' href='/editar?id=").append(p[0]).append("'>Editar</a> ")
-                    .append("<a class='action-btn delete-btn' href='/excluir?id=").append(p[0]).append("'>Excluir</a>")
+                    .append("<a class='action-btn edit-btn' href='/editar?id=")
+                    .append(p[0])
+                    .append("'>Editar</a> ")
+
+                    .append("<a class='action-btn delete-btn' href='/excluir?id=")
+                    .append(p[0])
+                    .append("'>Excluir</a>")
+
                     .append("</td>")
                     .append("</tr>");
             }
@@ -366,6 +397,12 @@ public class ServidorPilates {
                 "<th>Patologia</th>" +
                 "<th>Status</th>" +
                 "<th>Acesso</th>" +
+                "<th>Frequência</th>" +
+                "<th>Pontos</th>" +
+                "<th>Pagamento</th>" +
+                "<th>Aulas</th>" +
+                "<th>Horários</th>" +
+                "<th>Modalidades</th>" +
                 "<th>Ações</th>" +
                 "</tr>" +
 
