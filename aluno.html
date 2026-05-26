@@ -1,106 +1,148 @@
 <!DOCTYPE html>
-
 <html lang="pt-br">
-
 <head>
-
-<meta charset="UTF-8">
-
-<title>Painel do aluno</title>
-
-<link rel="stylesheet" href="/style.css">
-
+    <meta charset="UTF-8">
+    <title>Painel do Aluno</title>
+    <link rel="stylesheet" href="/style.css">
 </head>
-
 <body>
+
+<nav class="sidebar">
+
+    <div class="logo-container">
+        <img src="/logo.png">
+    </div>
+
+    <a href="/aluno" class="nav-link active">Meu Painel</a>
+
+    <a href="/" class="nav-link logout">🚪 Sair</a>
+
+</nav>
 
 <main class="main-content">
 
-<div class="content-card">
+    <div class="header">
+        <p id="dataAtual"></p>
+        <h1 id="nomeAluno">Boa noite</h1>
+    </div>
 
-<h1 id="tituloAluno">Boa noite aluno</h1>
+    <div class="dashboard-grid">
 
-<div class="dashboard-grid">
+        <div class="dashboard-card">
+            <h3>FREQUÊNCIA</h3>
+            <p id="frequencia">-</p>
+        </div>
 
-<div class="dashboard-card">
-<h3>Frequência</h3>
-<p id="frequencia"></p>
-</div>
+        <div class="dashboard-card">
+            <h3>PONTOS</h3>
+            <p id="pontos">0</p>
+        </div>
 
-<div class="dashboard-card">
-<h3>Pontos fidelidade</h3>
-<p id="pontos"></p>
-</div>
+        <div class="dashboard-card">
+            <h3>PAGAMENTO</h3>
+            <p id="pagamento">-</p>
+        </div>
 
-<div class="dashboard-card">
-<h3>Status pagamento</h3>
-<p id="pagamento"></p>
-</div>
+        <div class="dashboard-card">
+            <h3>AULAS</h3>
+            <p id="aulas">0</p>
+        </div>
 
-<div class="dashboard-card">
-<h3>Aulas realizadas</h3>
-<p id="aulas"></p>
-</div>
+    </div>
 
-</div>
+    <div class="content-card">
 
-<br>
+        <h2>Minhas Informações</h2>
 
-<div class="content-card">
+        <table>
 
-<h2>Horários das aulas</h2>
+            <tr>
+                <th>Patologia</th>
+                <th>Horários</th>
+                <th>Modalidades</th>
+            </tr>
 
-<p id="horarios"></p>
+            <tr>
+                <td id="patologia"></td>
+                <td id="horarios"></td>
+                <td id="modalidades"></td>
+            </tr>
 
-</div>
+        </table>
 
-<br>
-
-<div class="content-card">
-
-<h2>Modalidades</h2>
-
-<p id="modalidades"></p>
-
-</div>
-
-</div>
+    </div>
 
 </main>
 
 <script>
 
-fetch('/dadosAluno')
+const dias = [
+"domingo",
+"segunda-feira",
+"terça-feira",
+"quarta-feira",
+"quinta-feira",
+"sexta-feira",
+"sábado"
+];
 
+const meses = [
+"janeiro",
+"fevereiro",
+"março",
+"abril",
+"maio",
+"junho",
+"julho",
+"agosto",
+"setembro",
+"outubro",
+"novembro",
+"dezembro"
+];
+
+const hoje = new Date();
+
+document.getElementById("dataAtual").innerHTML =
+dias[hoje.getDay()] + ", " +
+hoje.getDate() + " de " +
+meses[hoje.getMonth()];
+
+fetch("/dadosAluno")
 .then(r => r.json())
+.then(dados => {
 
-.then(aluno => {
+    document.getElementById("nomeAluno").innerHTML =
+    "Boa noite, " + dados.nome;
 
-document.getElementById("tituloAluno").innerHTML =
-"Boa noite, " + aluno.nome;
+    document.getElementById("frequencia").innerHTML =
+    dados.frequencia;
 
-document.getElementById("frequencia").innerHTML =
-aluno.frequencia;
+    document.getElementById("pontos").innerHTML =
+    dados.pontos;
 
-document.getElementById("pontos").innerHTML =
-aluno.pontos;
+    document.getElementById("pagamento").innerHTML =
+    dados.pagamento;
 
-document.getElementById("pagamento").innerHTML =
-aluno.pagamento;
+    document.getElementById("aulas").innerHTML =
+    dados.aulas;
 
-document.getElementById("aulas").innerHTML =
-aluno.aulas;
+    document.getElementById("patologia").innerHTML =
+    dados.patologia;
 
-document.getElementById("horarios").innerHTML =
-aluno.horarios.replaceAll("|", "<br>");
+    document.getElementById("horarios").innerHTML =
+    dados.horarios;
 
-document.getElementById("modalidades").innerHTML =
-aluno.modalidades.replaceAll("|", "<br>");
+    document.getElementById("modalidades").innerHTML =
+    dados.modalidades;
 
 });
 
 </script>
 
 </body>
-
 </html>
+
+
+
+
