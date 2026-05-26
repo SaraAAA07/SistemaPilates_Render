@@ -4,23 +4,15 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.sql.*; // Importa o JDBC para conversar com o MySQL
 import java.time.LocalDate;
 import java.util.*;
 
 public class ServidorPilates {
-
-    // Método auxiliar para conectar ao seu banco de dados automaticamente
-    private static Connection conectar() throws Exception {
-        
-        String url = System.getenv("DB_URL") != null ? System.getenv("DB_URL") : "jdbc:mysql://localhost:3306/gindri_pilates";
-        String usuario = System.getenv("DB_USER") != null ? System.getenv("DB_USER") : "root";
-        String senha = System.getenv("DB_PASSWORD") != null ? System.getenv("DB_PASSWORD") : "ems@uri.santiago2026";
-
-        return DriverManager.getConnection(url, usuario, senha);
-    }
+    static final String ARQUIVO = "alunos.csv";
 
     public static void main(String[] args) throws Exception {
+        criarArquivo();
+
         int porta = Integer.parseInt(System.getenv().getOrDefault("PORT", "8080"));
         HttpServer servidor = HttpServer.create(new InetSocketAddress(porta), 0);
 
@@ -40,6 +32,13 @@ public class ServidorPilates {
 
         servidor.start();
         System.out.println("Servidor online na porta " + porta);
+    }
+
+    static void criarArquivo() throws IOException {
+        Path path = Paths.get(ARQUIVO);
+        if (!Files.exists(path)) {
+            Files.write(path, List.of("1;Maria Silva;Dor lombar;true", "2;Carlos Souza;Hérnia cervical;false"));
+        }
     }
 
     static class ArquivoHandler implements HttpHandler {
@@ -79,23 +78,12 @@ public class ServidorPilates {
     static class SalvarHandler implements HttpHandler {
         public void handle(HttpExchange t) throws IOException {
             Map<String, String> dados = formToMap(t);
-            
-            String nome = dados.get("nome");
-            String patologia = dados.get("patologia");
-            boolean emDia = Boolean.parseBoolean(dados.get("emDia"));
+            List<String> alunos = Files.readAllLines(Paths.get(ARQUIVO));
 
-            // Salva diretamente no MySQL
-            try (Connection conn = conectar()) {
-                String sql = "INSERT INTO alunos (nome, patologia, pagamento_em_dia) VALUES (?, ?, ?)";
-                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                    stmt.setString(1, nome);
-                    stmt.setString(2, patologia);
-                    stmt.setBoolean(3, emDia);
-                    stmt.executeUpdate();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            int id = alunos.size() + 1;
+            String linha = id + ";" + dados.get("nome") + ";" + dados.get("patologia") + ";" + dados.get("emDia");
+            alunos.add(linha);
+            Files.write(Paths.get(ARQUIVO), alunos);
 
             redirect(t, "/listar");
         }
@@ -104,19 +92,18 @@ public class ServidorPilates {
     static class ExcluirHandler implements HttpHandler {
         public void handle(HttpExchange t) throws IOException {
             String query = t.getRequestURI().getQuery();
-            int id = Integer.parseInt(query.split("=")[1]);
+            String id = query.split("=")[1];
 
-            // Exclui diretamente no MySQL
-            try (Connection conn = conectar()) {
-                String sql = "DELETE FROM alunos WHERE id = ?";
-                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                    stmt.setInt(1, id);
-                    stmt.executeUpdate();
+            List<String> alunos = Files.readAllLines(Paths.get(ARQUIVO));
+            List<String> novos = new ArrayList<>();
+
+            for (String aluno : alunos) {
+                if (!aluno.startsWith(id + ";")) {
+                    novos.add(aluno);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
 
+            Files.write(Paths.get(ARQUIVO), novos);
             redirect(t, "/listar");
         }
     }
@@ -124,49 +111,32 @@ public class ServidorPilates {
     static class EditarHandler implements HttpHandler {
         public void handle(HttpExchange t) throws IOException {
             if (t.getRequestMethod().equals("GET")) {
-                int id = Integer.parseInt(t.getRequestURI().getQuery().split("=")[1]);
-                String html = "";
+                String id = t.getRequestURI().getQuery().split("=")[1];
+                List<String> alunos = Files.readAllLines(Paths.get(ARQUIVO));
 
-                // Busca os dados atuais do aluno no MySQL para exibir na tela de edição
-                try (Connection conn = conectar()) {
-                    String sql = "SELECT * FROM alunos WHERE id = ?";
-                    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                        stmt.setInt(1, id);
-                        try (ResultSet rs = stmt.executeQuery()) {
-                            if (rs.next()) {
-                                String nome = rs.getString("nome");
-                                String patologia = rs.getString("patologia");
-                                boolean emDia = rs.getBoolean("pagamento_em_dia");
-
-                                html = "<html><head><link rel='stylesheet' href='/style.css'><meta charset='UTF-8'></head><body><main class='main-content'><div class='content-card'><h1>Editar Aluno</h1><form method='POST' action='/editar'><input type='hidden' name='id' value='" + id + "'><input type='text' name='nome' value='" + nome + "'><input type='text' name='patologia' value='" + patologia + "'><select name='emDia'><option value='true' " + (emDia ? "selected" : "") + ">Em dia</option><option value='false' " + (!emDia ? "selected" : "") + ">Pendente</option></select><button class='btn-primary' type='submit'>Salvar Alterações</button></form></div></main></body></html>";
-                            }
-                        }
+                for (String aluno : alunos) {
+                    String[] p = aluno.split(";");
+                    if (p[0].equals(id)) {
+                        String html = "<html><head><link rel='stylesheet' href='/style.css'><meta charset='UTF-8'></head><body><main class='main-content'><div class='content-card'><h1>Editar Aluno</h1><form method='POST' action='/editar'><input type='hidden' name='id' value='" + p[0] + "'><input type='text' name='nome' value='" + p[1] + "'><input type='text' name='patologia' value='" + p[2] + "'><select name='emDia'><option value='true'>Em dia</option><option value='false'>Pendente</option></select><button class='btn-primary' type='submit'>Salvar Alterações</button></form></div></main></body></html>";
+                        responder(t, html);
+                        return;
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
-                responder(t, html);
             } else {
                 Map<String, String> dados = formToMap(t);
-                int id = Integer.parseInt(dados.get("id"));
-                String nome = dados.get("nome");
-                String patologia = dados.get("patologia");
-                boolean emDia = Boolean.parseBoolean(dados.get("emDia"));
+                List<String> alunos = Files.readAllLines(Paths.get(ARQUIVO));
+                List<String> novos = new ArrayList<>();
 
-                // Atualiza os dados no MySQL
-                try (Connection conn = conectar()) {
-                    String sql = "UPDATE alunos SET nome = ?, patologia = ?, pagamento_em_dia = ? WHERE id = ?";
-                    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                        stmt.setString(1, nome);
-                        stmt.setString(2, patologia);
-                        stmt.setBoolean(3, emDia);
-                        stmt.setInt(4, id);
-                        stmt.executeUpdate();
+                for (String aluno : alunos) {
+                    String[] p = aluno.split(";");
+                    if (p[0].equals(dados.get("id"))) {
+                        novos.add(p[0] + ";" + dados.get("nome") + ";" + dados.get("patologia") + ";" + dados.get("emDia"));
+                    } else {
+                        novos.add(aluno);
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
 
+                Files.write(Paths.get(ARQUIVO), novos);
                 redirect(t, "/listar");
             }
         }
@@ -174,32 +144,20 @@ public class ServidorPilates {
 
     static class ListarHandler implements HttpHandler {
         public void handle(HttpExchange t) throws IOException {
+            List<String> alunos = Files.readAllLines(Paths.get(ARQUIVO));
+
             StringBuilder linhas = new StringBuilder();
+            for (String aluno : alunos) {
+                String[] p = aluno.split(";");
+                String status = p[3].equals("true") ? "<span class='badge badge-success'>Em dia</span>" : "<span class='badge badge-danger'>Pendente</span>";
 
-            // Busca todos os alunos direto do MySQL para montar a tabela HTML
-            try (Connection conn = conectar()) {
-                String sql = "SELECT * FROM alunos";
-                try (PreparedStatement stmt = conn.prepareStatement(sql);
-                     ResultSet rs = stmt.executeQuery()) {
-                    while (rs.next()) {
-                        int id = rs.getInt("id");
-                        String nome = rs.getString("nome");
-                        String patologia = rs.getString("patologia");
-                        boolean emDia = rs.getBoolean("pagamento_em_dia");
-
-                        String status = emDia ? "<span class='badge badge-success'>Em dia</span>" : "<span class='badge badge-danger'>Pendente</span>";
-
-                        linhas.append("<tr>")
-                                .append("<td>").append(nome).append("</td>")
-                                .append("<td>").append(patologia).append("</td>")
-                                .append("<td>").append(status).append("</td>")
-                                .append("<td><a class='action-btn edit-btn' href='/editar?id=").append(id).append("'>Editar</a> ")
-                                .append("<a class='action-btn delete-btn' href='/excluir?id=").append(id).append("'>Excluir</a></td>")
-                                .append("</tr>");
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+                linhas.append("<tr>")
+                        .append("<td>").append(p[1]).append("</td>")
+                        .append("<td>").append(p[2]).append("</td>")
+                        .append("<td>").append(status).append("</td>")
+                        .append("<td><a class='action-btn edit-btn' href='/editar?id=").append(p[0]).append("'>Editar</a> ")
+                        .append("<a class='action-btn delete-btn' href='/excluir?id=").append(p[0]).append("'>Excluir</a></td>")
+                        .append("</tr>");
             }
 
             String html = "<html><head><meta charset='UTF-8'><link rel='stylesheet' href='/style.css'><title>Alunos</title></head><body>"

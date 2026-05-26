@@ -20,3 +20,6 @@ The `JAVA PROJECTS` view allows you to manage your dependencies. More details ca
 =======
 # Sistema-Gerenciamento-Pilates
 >>>>>>> 41cc2b5ddbc66e0e526ec2980fe0eeec35662405
+
+
+Sistema atualizado visualmente com layout moderno, responsivo e organizado.

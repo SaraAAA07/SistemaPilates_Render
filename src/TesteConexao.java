@@ -7,11 +7,15 @@ public class TesteConexao {
 
     public static void main(String[] args) {
 
-  
-        String url = System.getenv("DB_URL") != null ? System.getenv("DB_URL") : "jdbc:mysql://localhost:3306/gindri_pilates";
-        String usuario = System.getenv("DB_USER") != null ? System.getenv("DB_USER") : "root";
-        String senha = System.getenv("DB_PASSWORD") != null ? System.getenv("DB_PASSWORD") : "ems@uri.santiago2026";
+        // 1. Dados para conectar ao banco de dados
+        String url = "jdbc:mysql://localhost:3306/gindri_pilates"; 
+        // url = endereço do banco (tipo, local e nome do banco)
 
+        String usuario = "root"; 
+        // usuário do banco (quem está acessando)
+
+        String senha = "ems@uri.santiago2026";    
+        // senha do banco
 
         try {
             // Mensagem só para mostrar no console que está tentando conectar
