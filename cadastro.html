@@ -24,6 +24,41 @@
         </div>
 
         <div class="content-card">
+
+            <div class="form-group">
+    <label style="color: #64748b; font-size: 14px;">
+        Permitir acesso ao sistema?
+    </label>
+
+    <select name="acesso" id="acesso" onchange="toggleLoginFields()">
+        <option value="nao">Não</option>
+        <option value="sim">Sim</option>
+    </select>
+</div>
+
+<div id="loginFields" style="display:none;">
+    
+    <div class="form-group">
+        <label>Usuário</label>
+        <input type="text" name="usuario" placeholder="Usuário do aluno">
+    </div>
+
+    <div class="form-group">
+        <label>Senha</label>
+        <input type="password" name="senha" placeholder="Senha do aluno">
+    </div>
+
+</div>
+
+<script>
+function toggleLoginFields() {
+    const acesso = document.getElementById("acesso").value;
+    const fields = document.getElementById("loginFields");
+
+    fields.style.display = acesso === "sim" ? "block" : "none";
+}
+</script>
+
             <form action="/salvar" method="POST">
                 
                 <div class="form-group">
