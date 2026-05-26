@@ -1,75 +1,106 @@
 <!DOCTYPE html>
+
 <html lang="pt-br">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Área do Aluno - Gindri Pilates</title>
+
+<meta charset="UTF-8">
+
+<title>Painel do aluno</title>
+
+<link rel="stylesheet" href="/style.css">
+
 </head>
+
 <body>
-    <nav class="sidebar">
-        <div class="logo-container">
-            <img src="/logo.png" alt="Logo">
-        </div>
-        <a href="/aluno" class="nav-link active">Meu Treino</a>
-        <a href="/" class="nav-link" style="margin-top: auto; color: var(--danger);">🚪 Sair</a>
-    </nav>
 
-    <main class="main-content">
-        <div class="header">
-            <p id="data-cabecalho" style="color: #64748b; margin: 0;"></p>
-            <h1 id="saudacao-cabecalho">Carregando...</h1>
-        </div>
+<main class="main-content">
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <small>Aulas Realizadas</small>
-                <div>12</div>
-            </div>
-            <div class="stat-card">
-                <small>Frequência Mensal</small>
-                <div style="color: var(--secondary)">98%</div>
-            </div>
-            <div class="stat-card">
-                <small>Pagamento</small>
-                <div style="margin-top: 10px;"><span class="badge badge-success">EM DIA</span></div>
-            </div>
-            <div class="stat-card">
-                <small>Pontos Fidelidade</small>
-                <div>150</div>
-            </div>
-        </div>
+<div class="content-card">
 
-        <div class="content-card">
-            <h3>Exercícios Home Care</h3>
-            <p style="color: #64748b;">Conforme sua anamnese clínica, realize os exercícios abaixo diariamente.</p>
-            
-            <div style="margin-top: 20px; border-left: 4px solid var(--secondary); padding-left: 15px; margin-bottom: 15px;">
-                <strong>Alongamento de Cadeia Posterior</strong><br>
-                <small style="color: #64748b;">3 séries de 45 segundos</small>
-            </div>
-            <div style="border-left: 4px solid var(--secondary); padding-left: 15px;">
-                <strong>Mobilidade de Quadril</strong><br>
-                <small style="color: #64748b;">15 repetições</small>
-            </div>
-        </div>
+<h1 id="tituloAluno">Boa noite aluno</h1>
 
-        <footer>
-            <p>&copy; 2026 Alice Hemann Gindri. Todos os direitos reservados.</p>
-        </footer>
-    </main>
+<div class="dashboard-grid">
 
-    <script>
-        const dataAtual = new Date();
-        const opcoesData = { weekday: 'long', day: 'numeric', month: 'long' };
-        document.getElementById('data-cabecalho').innerText = dataAtual.toLocaleDateString('pt-BR', opcoesData);
+<div class="dashboard-card">
+<h3>Frequência</h3>
+<p id="frequencia"></p>
+</div>
 
-        const hora = dataAtual.getHours();
-        let saudacao = "Bom dia";
-        if (hora >= 12 && hora < 18) saudacao = "Boa tarde";
-        else if (hora >= 18) saudacao = "Boa noite";
-        
-        document.getElementById('saudacao-cabecalho').innerText = saudacao + ", Aluno(a)";
-    </script>
+<div class="dashboard-card">
+<h3>Pontos fidelidade</h3>
+<p id="pontos"></p>
+</div>
+
+<div class="dashboard-card">
+<h3>Status pagamento</h3>
+<p id="pagamento"></p>
+</div>
+
+<div class="dashboard-card">
+<h3>Aulas realizadas</h3>
+<p id="aulas"></p>
+</div>
+
+</div>
+
+<br>
+
+<div class="content-card">
+
+<h2>Horários das aulas</h2>
+
+<p id="horarios"></p>
+
+</div>
+
+<br>
+
+<div class="content-card">
+
+<h2>Modalidades</h2>
+
+<p id="modalidades"></p>
+
+</div>
+
+</div>
+
+</main>
+
+<script>
+
+fetch('/dadosAluno')
+
+.then(r => r.json())
+
+.then(aluno => {
+
+document.getElementById("tituloAluno").innerHTML =
+"Boa noite, " + aluno.nome;
+
+document.getElementById("frequencia").innerHTML =
+aluno.frequencia;
+
+document.getElementById("pontos").innerHTML =
+aluno.pontos;
+
+document.getElementById("pagamento").innerHTML =
+aluno.pagamento;
+
+document.getElementById("aulas").innerHTML =
+aluno.aulas;
+
+document.getElementById("horarios").innerHTML =
+aluno.horarios.replaceAll("|", "<br>");
+
+document.getElementById("modalidades").innerHTML =
+aluno.modalidades.replaceAll("|", "<br>");
+
+});
+
+</script>
+
 </body>
+
 </html>

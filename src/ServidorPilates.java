@@ -12,6 +12,7 @@ public class ServidorPilates {
     static final String ARQUIVO = "alunos.csv";
 
     static String alunoLogado = "";
+    static String[] dadosAlunoLogado = null;
 
     public static void main(String[] args) throws Exception {
 
@@ -35,9 +36,64 @@ public class ServidorPilates {
         servidor.createContext("/excluir", new ExcluirHandler());
         servidor.createContext("/editar", new EditarHandler());
 
-        servidor.createContext("/nomeAluno", exchange -> {
+        servidor.createContext("/dadosAluno", exchange -> {
 
-            byte[] resp = alunoLogado.getBytes(StandardCharsets.UTF_8);
+            String json =
+                    "{"
+                            + "\"nome\":\"" + (dadosAlunoLogado != null ? dadosAlunoLogado[1] : "") + "\","
+                            + "\"patologia\":\"" + (dadosAlunoLogado != null ? dadosAlunoLogado[2] : "") + "\","
+                            + "\"frequencia\":\"" + (dadosAlunoLogado != null && dadosAlunoLogado.length >= 8 ? dadosAlunoLogado[7] : "") + "\","
+                            + "\"pontos\":\"" + (dadosAlunoLogado != null && dadosAlunoLogado.length >= 9 ? dadosAlunoLogado[8] : "0") + "\","
+                            + "\"pagamento\":\"" + (dadosAlunoLogado != null && dadosAlunoLogado.length >= 10 ? dadosAlunoLogado[9] : "") + "\","
+                            + "\"aulas\":\"" + (dadosAlunoLogado != null && dadosAlunoLogado.length >= 11 ? dadosAlunoLogado[10] : "") + "\","
+                            + "\"horarios\":\"" + (dadosAlunoLogado != null && dadosAlunoLogado.length >= 12 ? dadosAlunoLogado[11] : "") + "\","
+                            + "\"modalidades\":\"" + (dadosAlunoLogado != null && dadosAlunoLogado.length >= 13 ? dadosAlunoLogado[12] : "") + "\""
+                            + "}";
+
+            byte[] resp = json.getBytes(StandardCharsets.UTF_8);
+
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+
+            exchange.sendResponseHeaders(200, resp.length);
+
+            exchange.getResponseBody().write(resp);
+
+            exchange.close();
+        });
+
+        servidor.createContext("/estatisticas", exchange -> {
+
+            List<String> alunos = Files.readAllLines(Paths.get(ARQUIVO));
+
+            int total = alunos.size();
+
+            int inadimplentes = 0;
+
+            for (String aluno : alunos) {
+
+                String[] p = aluno.split(";");
+
+                if (p.length >= 10) {
+
+                    if (
+                            p[9].equalsIgnoreCase("Pendente")
+                                    || p[9].equalsIgnoreCase("Atrasado")
+                    ) {
+
+                        inadimplentes++;
+                    }
+                }
+            }
+
+            String json =
+                    "{"
+                            + "\"total\":" + total + ","
+                            + "\"inadimplentes\":" + inadimplentes
+                            + "}";
+
+            byte[] resp = json.getBytes(StandardCharsets.UTF_8);
+
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
 
             exchange.sendResponseHeaders(200, resp.length);
 
@@ -58,10 +114,10 @@ public class ServidorPilates {
         if (!Files.exists(path)) {
 
             Files.write(
-                path,
-                List.of(
-                    "1;Maria Silva;Dor lombar;true;sim;maria;123;2x Semana;120;Pago;10;Segunda 08:00|Quarta 08:00;Pilates Solo|Funcional"
-                )
+                    path,
+                    List.of(
+                            "1;Maria Silva;Dor lombar;true;sim;maria;123;2x Semana;120;Pago;10;Segunda 08:00|Quarta 08:00;Pilates Solo|Funcional"
+                    )
             );
         }
     }
@@ -99,14 +155,12 @@ public class ServidorPilates {
             String usuario = dados.getOrDefault("usuario", "");
             String senha = dados.getOrDefault("senha", "");
 
-            // LOGIN ADMIN
             if (usuario.equals("alice") && senha.equals("123")) {
 
                 redirect(t, "/admin");
                 return;
             }
 
-            // LOGIN DOS ALUNOS
             List<String> alunos = Files.readAllLines(Paths.get(ARQUIVO));
 
             for (String aluno : alunos) {
@@ -121,6 +175,7 @@ public class ServidorPilates {
                     if (usuario.equals(usuarioAluno) && senha.equals(senhaAluno)) {
 
                         alunoLogado = p[1];
+                        dadosAlunoLogado = p;
 
                         redirect(t, "/aluno");
 
@@ -130,8 +185,8 @@ public class ServidorPilates {
             }
 
             responder(
-                t,
-                "<h2 style='font-family:sans-serif;text-align:center;margin-top:50px;'>Login inválido.<br><a href='/'>Voltar</a></h2>"
+                    t,
+                    "<h2 style='font-family:sans-serif;text-align:center;margin-top:50px;'>Login inválido.<br><a href='/'>Voltar</a></h2>"
             );
         }
     }
@@ -147,19 +202,19 @@ public class ServidorPilates {
             int id = alunos.size() + 1;
 
             String linha =
-                id + ";" +
-                dados.get("nome") + ";" +
-                dados.get("patologia") + ";" +
-                dados.get("emDia") + ";" +
-                dados.getOrDefault("acesso", "nao") + ";" +
-                dados.getOrDefault("usuario", "") + ";" +
-                dados.getOrDefault("senha", "") + ";" +
-                dados.getOrDefault("frequencia", "") + ";" +
-                dados.getOrDefault("pontos", "0") + ";" +
-                dados.getOrDefault("pagamento", "Pendente") + ";" +
-                dados.getOrDefault("aulasRealizadas", "0") + ";" +
-                dados.getOrDefault("datasAulas", "") + ";" +
-                dados.getOrDefault("catalogoAulas", "");
+                    id + ";" +
+                            dados.get("nome") + ";" +
+                            dados.get("patologia") + ";" +
+                            dados.get("emDia") + ";" +
+                            dados.getOrDefault("acesso", "nao") + ";" +
+                            dados.getOrDefault("usuario", "") + ";" +
+                            dados.getOrDefault("senha", "") + ";" +
+                            dados.getOrDefault("frequencia", "") + ";" +
+                            dados.getOrDefault("pontos", "0") + ";" +
+                            dados.getOrDefault("pagamento", "Pendente") + ";" +
+                            dados.getOrDefault("aulasRealizadas", "0") + ";" +
+                            dados.getOrDefault("datasAulas", "") + ";" +
+                            dados.getOrDefault("catalogoAulas", "");
 
             alunos.add(linha);
 
@@ -197,298 +252,133 @@ public class ServidorPilates {
 
     static class EditarHandler implements HttpHandler {
 
-    public void handle(HttpExchange t) throws IOException {
+        public void handle(HttpExchange t) throws IOException {
 
-        // =========================
-        // ABRIR TELA DE EDIÇÃO
-        // =========================
+            if (t.getRequestMethod().equals("GET")) {
 
-        if (t.getRequestMethod().equals("GET")) {
+                String id = t.getRequestURI().getQuery().split("=")[1];
 
-            String id = t.getRequestURI().getQuery().split("=")[1];
+                List<String> alunos = Files.readAllLines(Paths.get(ARQUIVO));
 
-            List<String> alunos = Files.readAllLines(Paths.get(ARQUIVO));
+                for (String aluno : alunos) {
 
-            for (String aluno : alunos) {
+                    String[] p = aluno.split(";");
 
-                String[] p = aluno.split(";");
+                    if (p[0].equals(id)) {
 
-                if (p[0].equals(id)) {
+                        String html =
+                                "<html><head><meta charset='UTF-8'><link rel='stylesheet' href='/style.css'></head><body>" +
 
-                    String acesso = p.length >= 5 ? p[4] : "nao";
-                    String usuario = p.length >= 6 ? p[5] : "";
-                    String senha = p.length >= 7 ? p[6] : "";
+                                        "<main class='main-content'>" +
 
-                    String frequencia = p.length >= 8 ? p[7] : "";
-                    String pontos = p.length >= 9 ? p[8] : "0";
-                    String pagamento = p.length >= 10 ? p[9] : "Pendente";
-                    String aulas = p.length >= 11 ? p[10] : "0";
-                    String horarios = p.length >= 12 ? p[11] : "";
-                    String modalidades = p.length >= 13 ? p[12] : "";
-                    String tipoPrincipal = p.length >= 14 ? p[13] : "";
+                                        "<div class='content-card'>" +
 
-                    String html =
+                                        "<h1>Editar aluno</h1>" +
 
-                        "<html>" +
+                                        "<form method='POST' action='/editar'>" +
 
-                        "<head>" +
+                                        "<input type='hidden' name='id' value='" + p[0] + "'>" +
 
-                        "<meta charset='UTF-8'>" +
+                                        "<label>Nome</label>" +
+                                        "<input type='text' name='nome' value='" + p[1] + "'>" +
 
-                        "<link rel='stylesheet' href='/style.css'>" +
+                                        "<label>Patologia</label>" +
+                                        "<input type='text' name='patologia' value='" + p[2] + "'>" +
 
-                        "<title>Editar aluno</title>" +
+                                        "<label>Status pagamento</label>" +
+                                        "<select name='emDia'>" +
+                                        "<option value='true'>Em dia</option>" +
+                                        "<option value='false'>Pendente</option>" +
+                                        "</select>" +
 
-                        "</head>" +
+                                        "<label>Acesso ao sistema</label>" +
+                                        "<select name='acesso'>" +
+                                        "<option value='sim'>Sim</option>" +
+                                        "<option value='nao'>Não</option>" +
+                                        "</select>" +
 
-                        "<body>" +
+                                        "<label>Usuário</label>" +
+                                        "<input type='text' name='usuario' value='" + (p.length >= 6 ? p[5] : "") + "'>" +
 
-                        "<main class='main-content'>" +
+                                        "<label>Senha</label>" +
+                                        "<input type='text' name='senha' value='" + (p.length >= 7 ? p[6] : "") + "'>" +
 
-                        "<div class='content-card'>" +
+                                        "<label>Frequência</label>" +
+                                        "<input type='text' name='frequencia' value='" + (p.length >= 8 ? p[7] : "") + "'>" +
 
-                        "<h1>Editar aluno</h1>" +
+                                        "<label>Pontos fidelidade</label>" +
+                                        "<input type='number' name='pontos' value='" + (p.length >= 9 ? p[8] : "0") + "'>" +
 
-                        "<form method='POST' action='/editar'>" +
+                                        "<label>Pagamento</label>" +
+                                        "<input type='text' name='pagamento' value='" + (p.length >= 10 ? p[9] : "") + "'>" +
 
-                        "<input type='hidden' name='id' value='" + p[0] + "'>" +
+                                        "<label>Aulas realizadas</label>" +
+                                        "<input type='number' name='aulasRealizadas' value='" + (p.length >= 11 ? p[10] : "0") + "'>" +
 
-                        // =========================
-                        // NOME
-                        // =========================
+                                        "<label>Horários</label>" +
+                                        "<textarea name='datasAulas'>" + (p.length >= 12 ? p[11] : "") + "</textarea>" +
 
-                        "<label>Nome do aluno</label>" +
+                                        "<label>Modalidades</label>" +
+                                        "<textarea name='catalogoAulas'>" + (p.length >= 13 ? p[12] : "") + "</textarea>" +
 
-                        "<input type='text' name='nome' value='" + p[1] + "' placeholder='Nome do aluno'>" +
+                                        "<button class='btn-primary'>Salvar alterações</button>" +
 
-                        // =========================
-                        // PATOLOGIA
-                        // =========================
+                                        "</form>" +
 
-                        "<label>Patologia</label>" +
+                                        "</div>" +
 
-                        "<input type='text' name='patologia' value='" + p[2] + "' placeholder='Patologia'>" +
+                                        "</main>" +
 
-                        // =========================
-                        // STATUS
-                        // =========================
+                                        "</body></html>";
 
-                        "<label>Status financeiro</label>" +
+                        responder(t, html);
 
-                        "<select name='emDia'>" +
-
-                        "<option value='true'" + (p[3].equals("true") ? " selected" : "") + ">Em dia</option>" +
-
-                        "<option value='false'" + (p[3].equals("false") ? " selected" : "") + ">Pendente</option>" +
-
-                        "</select>" +
-
-                        // =========================
-                        // ACESSO
-                        // =========================
-
-                        "<label>Permitir acesso ao sistema?</label>" +
-
-                        "<select name='acesso'>" +
-
-                        "<option value='sim'" + (acesso.equals("sim") ? " selected" : "") + ">Sim</option>" +
-
-                        "<option value='nao'" + (acesso.equals("nao") ? " selected" : "") + ">Não</option>" +
-
-                        "</select>" +
-
-                        // =========================
-                        // LOGIN
-                        // =========================
-
-                        "<label>Usuário do aluno</label>" +
-
-                        "<input type='text' name='usuario' value='" + usuario + "' placeholder='Usuário'>" +
-
-                        "<label>Senha do aluno</label>" +
-
-                        "<input type='password' name='senha' value='" + senha + "' placeholder='Senha'>" +
-
-                        // =========================
-                        // FREQUÊNCIA
-                        // =========================
-
-                        "<label>Frequência semanal</label>" +
-
-                        "<select name='frequencia'>" +
-
-                        "<option " + (frequencia.equals("1x Semana") ? "selected" : "") + ">1x Semana</option>" +
-
-                        "<option " + (frequencia.equals("2x Semana") ? "selected" : "") + ">2x Semana</option>" +
-
-                        "<option " + (frequencia.equals("3x Semana") ? "selected" : "") + ">3x Semana</option>" +
-
-                        "<option " + (frequencia.equals("4x Semana") ? "selected" : "") + ">4x Semana</option>" +
-
-                        "<option " + (frequencia.equals("5x Semana") ? "selected" : "") + ">5x Semana</option>" +
-
-                        "</select>" +
-
-                        // =========================
-                        // PONTOS
-                        // =========================
-
-                        "<label>Pontos de fidelidade</label>" +
-
-                        "<input type='number' name='pontos' value='" + pontos + "'>" +
-
-                        // =========================
-                        // PAGAMENTO
-                        // =========================
-
-                        "<label>Status de pagamento</label>" +
-
-                        "<select name='pagamento'>" +
-
-                        "<option " + (pagamento.equals("Pago") ? "selected" : "") + ">Pago</option>" +
-
-                        "<option " + (pagamento.equals("Pendente") ? "selected" : "") + ">Pendente</option>" +
-
-                        "<option " + (pagamento.equals("Atrasado") ? "selected" : "") + ">Atrasado</option>" +
-
-                        "</select>" +
-
-                        // =========================
-                        // AULAS
-                        // =========================
-
-                        "<label>Quantidade de aulas realizadas</label>" +
-
-                        "<input type='number' name='aulasRealizadas' value='" + aulas + "'>" +
-
-                        // =========================
-                        // HORÁRIOS
-                        // =========================
-
-                        "<label>Dias e horários das aulas</label>" +
-
-                        "<textarea name='datasAulas' rows='4' placeholder='Ex: Segunda 08:00'>" +
-
-                        horarios +
-
-                        "</textarea>" +
-
-                        // =========================
-                        // MODALIDADES
-                        // =========================
-
-                        "<label>Modalidades selecionadas</label>" +
-
-                        "<textarea name='catalogoAulas' rows='4' placeholder='Ex: Pilates Solo, Funcional'>" +
-
-                        modalidades +
-
-                        "</textarea>" +
-
-                        // =========================
-                        // TIPO PRINCIPAL
-                        // =========================
-
-                        "<label>Tipo principal</label>" +
-
-                        "<select name='tipoPrincipal'>" +
-
-                        "<option " + (tipoPrincipal.equals("Pilates") ? "selected" : "") + ">Pilates</option>" +
-
-                        "<option " + (tipoPrincipal.equals("Funcional") ? "selected" : "") + ">Funcional</option>" +
-
-                        "</select>" +
-
-                        // =========================
-                        // BOTÃO
-                        // =========================
-
-                        "<button class='btn-primary' type='submit'>" +
-
-                        "Salvar alterações" +
-
-                        "</button>" +
-
-                        "</form>" +
-
-                        "</div>" +
-
-                        "</main>" +
-
-                        "</body>" +
-
-                        "</html>";
-
-                    responder(t, html);
-
-                    return;
+                        return;
+                    }
                 }
-            }
 
-        }
+            } else {
 
-        // =========================
-        // SALVAR ALTERAÇÕES
-        // =========================
+                Map<String, String> dados = formToMap(t);
 
-        else {
+                List<String> alunos = Files.readAllLines(Paths.get(ARQUIVO));
 
-            Map<String, String> dados = formToMap(t);
+                List<String> novos = new ArrayList<>();
 
-            List<String> alunos = Files.readAllLines(Paths.get(ARQUIVO));
+                for (String aluno : alunos) {
 
-            List<String> novos = new ArrayList<>();
+                    String[] p = aluno.split(";");
 
-            for (String aluno : alunos) {
+                    if (p[0].equals(dados.get("id"))) {
 
-                String[] p = aluno.split(";");
+                        novos.add(
+                                p[0] + ";" +
+                                        dados.get("nome") + ";" +
+                                        dados.get("patologia") + ";" +
+                                        dados.get("emDia") + ";" +
+                                        dados.getOrDefault("acesso", "nao") + ";" +
+                                        dados.getOrDefault("usuario", "") + ";" +
+                                        dados.getOrDefault("senha", "") + ";" +
+                                        dados.getOrDefault("frequencia", "") + ";" +
+                                        dados.getOrDefault("pontos", "0") + ";" +
+                                        dados.getOrDefault("pagamento", "") + ";" +
+                                        dados.getOrDefault("aulasRealizadas", "0") + ";" +
+                                        dados.getOrDefault("datasAulas", "") + ";" +
+                                        dados.getOrDefault("catalogoAulas", "")
+                        );
 
-                if (p[0].equals(dados.get("id"))) {
+                    } else {
 
-                    novos.add(
-
-                        p[0] + ";" +
-
-                        dados.get("nome") + ";" +
-
-                        dados.get("patologia") + ";" +
-
-                        dados.get("emDia") + ";" +
-
-                        dados.getOrDefault("acesso", "nao") + ";" +
-
-                        dados.getOrDefault("usuario", "") + ";" +
-
-                        dados.getOrDefault("senha", "") + ";" +
-
-                        dados.getOrDefault("frequencia", "") + ";" +
-
-                        dados.getOrDefault("pontos", "0") + ";" +
-
-                        dados.getOrDefault("pagamento", "Pendente") + ";" +
-
-                        dados.getOrDefault("aulasRealizadas", "0") + ";" +
-
-                        dados.getOrDefault("datasAulas", "") + ";" +
-
-                        dados.getOrDefault("catalogoAulas", "") + ";" +
-
-                        dados.getOrDefault("tipoPrincipal", "")
-
-                    );
-
-                } else {
-
-                    novos.add(aluno);
+                        novos.add(aluno);
+                    }
                 }
+
+                Files.write(Paths.get(ARQUIVO), novos);
+
+                redirect(t, "/listar");
             }
-
-            Files.write(Paths.get(ARQUIVO), novos);
-
-            redirect(t, "/listar");
         }
     }
-}
 
     static class ListarHandler implements HttpHandler {
 
@@ -503,99 +393,100 @@ public class ServidorPilates {
                 String[] p = aluno.split(";");
 
                 String status =
-                    p[3].equals("true")
-                        ? "<span class='badge badge-success'>Em dia</span>"
-                        : "<span class='badge badge-danger'>Pendente</span>";
+                        p[3].equals("true")
+                                ? "<span class='badge badge-success'>Em dia</span>"
+                                : "<span class='badge badge-danger'>Pendente</span>";
 
                 String acesso =
-                    p.length >= 5 && p[4].equals("sim")
-                        ? "<span class='badge badge-success'>Possui acesso</span>"
-                        : "<span class='badge badge-danger'>Sem acesso</span>";
+                        p.length >= 5 && p[4].equals("sim")
+                                ? "<span class='badge badge-success'>Possui acesso</span>"
+                                : "<span class='badge badge-danger'>Sem acesso</span>";
 
                 linhas.append("<tr>")
-                    .append("<td>").append(p[1]).append("</td>")
-                    .append("<td>").append(p[2]).append("</td>")
-                    .append("<td>").append(status).append("</td>")
-                    .append("<td>").append(acesso).append("</td>")
-                    .append("<td>").append(p.length >= 8 ? p[7] : "").append("</td>")
-                    .append("<td>").append(p.length >= 9 ? p[8] : "0").append("</td>")
-                    .append("<td>").append(p.length >= 10 ? p[9] : "").append("</td>")
-                    .append("<td>").append(p.length >= 11 ? p[10] : "").append("</td>")
-                    .append("<td>").append(p.length >= 12 ? p[11] : "").append("</td>")
-                    .append("<td>").append(p.length >= 13 ? p[12] : "").append("</td>")
-                    .append("<td>")
-                    .append("<a class='action-btn edit-btn' href='/editar?id=")
-                    .append(p[0])
-                    .append("'>Editar</a> ")
+                        .append("<td>").append(p[1]).append("</td>")
+                        .append("<td>").append(p[2]).append("</td>")
+                        .append("<td>").append(status).append("</td>")
+                        .append("<td>").append(acesso).append("</td>")
+                        .append("<td>").append(p.length >= 8 ? p[7] : "").append("</td>")
+                        .append("<td>").append(p.length >= 9 ? p[8] : "0").append("</td>")
+                        .append("<td>").append(p.length >= 10 ? p[9] : "").append("</td>")
+                        .append("<td>").append(p.length >= 11 ? p[10] : "").append("</td>")
+                        .append("<td>").append(p.length >= 12 ? p[11] : "").append("</td>")
+                        .append("<td>").append(p.length >= 13 ? p[12] : "").append("</td>")
+                        .append("<td>")
 
-                    .append("<a class='action-btn delete-btn' href='/excluir?id=")
-                    .append(p[0])
-                    .append("'>Excluir</a>")
+                        .append("<a class='action-btn edit-btn' href='/editar?id=")
+                        .append(p[0])
+                        .append("'>Editar</a> ")
 
-                    .append("</td>")
-                    .append("</tr>");
+                        .append("<a class='action-btn delete-btn' href='/excluir?id=")
+                        .append(p[0])
+                        .append("'>Excluir</a>")
+
+                        .append("</td>")
+                        .append("</tr>");
             }
 
             String html =
-                "<html>" +
+                    "<html>" +
 
-                "<head>" +
-                "<meta charset='UTF-8'>" +
-                "<link rel='stylesheet' href='/style.css'>" +
-                "<title>Alunos</title>" +
-                "</head>" +
+                            "<head>" +
+                            "<meta charset='UTF-8'>" +
+                            "<link rel='stylesheet' href='/style.css'>" +
+                            "<title>Alunos</title>" +
+                            "</head>" +
 
-                "<body>" +
+                            "<body>" +
 
-                "<nav class='sidebar'>" +
+                            "<nav class='sidebar'>" +
 
-                "<div class='logo-container'>" +
-                "<img src='/logo.png'>" +
-                "</div>" +
+                            "<div class='logo-container'>" +
+                            "<img src='/logo.png'>" +
+                            "</div>" +
 
-                "<a href='/admin' class='nav-link'>Painel</a>" +
-                "<a href='/listar' class='nav-link active'>Alunos</a>" +
-                "<a href='/cadastro' class='nav-link'>Novo Cadastro</a>" +
-                "<a href='/' class='nav-link'>Sair</a>" +
+                            "<a href='/admin' class='nav-link'>Painel</a>" +
+                            "<a href='/listar' class='nav-link active'>Alunos</a>" +
+                            "<a href='/cadastro' class='nav-link'>Novo Cadastro</a>" +
+                            "<a href='/' class='nav-link'>Sair</a>" +
 
-                "</nav>" +
+                            "</nav>" +
 
-                "<main class='main-content'>" +
+                            "<main class='main-content'>" +
 
-                "<div class='header'>" +
-                "<p>" + LocalDate.now() + "</p>" +
-                "<h1>Alunos cadastrados</h1>" +
-                "</div>" +
+                            "<div class='header'>" +
+                            "<p>" + LocalDate.now() + "</p>" +
+                            "<h1>Alunos cadastrados</h1>" +
+                            "</div>" +
 
-                "<div class='content-card'>" +
+                            "<div class='content-card'>" +
 
-                "<table>" +
+                            "<table border='1'>" +
 
-                "<tr>" +
-                "<th>Nome</th>" +
-                "<th>Patologia</th>" +
-                "<th>Status</th>" +
-                "<th>Acesso</th>" +
-                "<th>Frequência</th>" +
-                "<th>Pontos</th>" +
-                "<th>Pagamento</th>" +
-                "<th>Aulas</th>" +
-                "<th>Horários</th>" +
-                "<th>Modalidades</th>" +
-                "<th>Ações</th>" +
-                "</tr>" +
+                            "<tr>" +
+                            "<th>Nome</th>" +
+                            "<th>Patologia</th>" +
+                            "<th>Status</th>" +
+                            "<th>Acesso</th>" +
+                            "<th>Frequência</th>" +
+                            "<th>Pontos</th>" +
+                            "<th>Pagamento</th>" +
+                            "<th>Aulas</th>" +
+                            "<th>Horários</th>" +
+                            "<th>Modalidades</th>" +
+                            "<th>Ações</th>" +
+                            "</tr>" +
 
-                linhas +
+                            linhas +
 
-                "</table>" +
+                            "</table>" +
 
-                "</div>" +
+                            "</div>" +
 
-                "</main>" +
+                            "</main>" +
 
-                "</body>" +
+                            "</body>" +
 
-                "</html>";
+                            "</html>";
 
             responder(t, html);
         }
@@ -604,8 +495,8 @@ public class ServidorPilates {
     static Map<String, String> formToMap(HttpExchange t) throws IOException {
 
         String form = new String(
-            t.getRequestBody().readAllBytes(),
-            StandardCharsets.UTF_8
+                t.getRequestBody().readAllBytes(),
+                StandardCharsets.UTF_8
         );
 
         Map<String, String> dados = new HashMap<>();
@@ -617,8 +508,8 @@ public class ServidorPilates {
             if (p.length == 2) {
 
                 dados.put(
-                    URLDecoder.decode(p[0], StandardCharsets.UTF_8),
-                    URLDecoder.decode(p[1], StandardCharsets.UTF_8)
+                        URLDecoder.decode(p[0], StandardCharsets.UTF_8),
+                        URLDecoder.decode(p[1], StandardCharsets.UTF_8)
                 );
             }
         }
@@ -631,8 +522,8 @@ public class ServidorPilates {
         byte[] resp = html.getBytes(StandardCharsets.UTF_8);
 
         t.getResponseHeaders().set(
-            "Content-Type",
-            "text/html; charset=UTF-8"
+                "Content-Type",
+                "text/html; charset=UTF-8"
         );
 
         t.sendResponseHeaders(200, resp.length);
@@ -651,3 +542,5 @@ public class ServidorPilates {
         t.close();
     }
 }
+
+
