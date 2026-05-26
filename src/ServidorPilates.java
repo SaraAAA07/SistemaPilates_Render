@@ -389,51 +389,110 @@ public class ServidorPilates {
             }
 
             String html =
-                "<html>" +
+    "<html>" +
 
-                "<head>" +
-                "<meta charset='UTF-8'>" +
-                "<link rel='stylesheet' href='/style.css'>" +
-                "<title>Alunos</title>" +
-                "</head>" +
+    "<head>" +
+    "<meta charset='UTF-8'>" +
+    "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+    "<link rel='stylesheet' href='/style.css'>" +
+    "<title>Alunos</title>" +
+    "</head>" +
 
-                "<body>" +
+    "<body>" +
 
-                "<main class='main-content'>" +
+    // SIDEBAR
+    "<nav class='sidebar'>" +
 
-                "<div class='header'>" +
-                "<p>" + LocalDate.now() + "</p>" +
-                "<h1>Alunos cadastrados</h1>" +
-                "</div>" +
+    "<div class='logo-container'>" +
+    "<img src='/logo.png'>" +
+    "</div>" +
 
-                "<div class='content-card'>" +
+    "<a href='/admin' class='nav-link'>🏠 Painel</a>" +
+    "<a href='/listar' class='nav-link active'>👨‍🎓 Alunos</a>" +
+    "<a href='/cadastro' class='nav-link'>➕ Novo Cadastro</a>" +
 
-                "<table border='1' cellpadding='10'>" +
+    // BOTÃO VOLTAR
+    "<a href='javascript:history.back()' class='nav-link'>⬅ Voltar</a>" +
 
-                "<tr>" +
-                "<th>Nome</th>" +
-                "<th>Patologia</th>" +
-                "<th>Frequência</th>" +
-                "<th>Pontos</th>" +
-                "<th>Pagamento</th>" +
-                "<th>Aulas</th>" +
-                "<th>Horários</th>" +
-                "<th>Modalidades</th>" +
-                "<th>Treino</th>" +
-                "<th>Ações</th>" +
-                "</tr>" +
+    "<a href='/' class='nav-link logout-btn'>🚪 Sair</a>" +
 
-                linhas +
+    "</nav>" +
 
-                "</table>" +
+    // CONTEÚDO PRINCIPAL
+    "<main class='main-content'>" +
 
-                "</div>" +
+    "<div class='header alunos-header'>" +
 
-                "</main>" +
+    "<div>" +
+    "<p class='data-text'>" + LocalDate.now() + "</p>" +
+    "<h1>Alunos cadastrados</h1>" +
+    "</div>" +
 
-                "</body>" +
+    "<div class='header-actions'>" +
 
-                "</html>";
+    // CAMPO BUSCA
+    "<input type='text' id='buscarAluno' placeholder='Buscar aluno...' class='search-input'>" +
+
+    "<a href='/cadastro' class='novo-btn'>+ Novo aluno</a>" +
+
+    "</div>" +
+    "</div>" +
+
+    // CARD
+    "<div class='content-card tabela-container'>" +
+
+    // RESPONSIVIDADE DA TABELA
+    "<div class='table-responsive'>" +
+
+    "<table class='alunos-table'>" +
+
+    "<thead>" +
+    "<tr>" +
+    "<th>Nome</th>" +
+    "<th>Patologia</th>" +
+    "<th>Frequência</th>" +
+    "<th>Pontos</th>" +
+    "<th>Pagamento</th>" +
+    "<th>Aulas</th>" +
+    "<th>Horários</th>" +
+    "<th>Modalidades</th>" +
+    "<th>Treino</th>" +
+    "<th>Ações</th>" +
+    "</tr>" +
+    "</thead>" +
+
+    "<tbody id='tabelaAlunos'>" +
+
+    linhas +
+
+    "</tbody>" +
+
+    "</table>" +
+    "</div>" +
+    "</div>" +
+    "</main>" +
+
+    // SCRIPT DE BUSCA
+    "<script>" +
+
+    "const busca = document.getElementById('buscarAluno');" +
+
+    "busca.addEventListener('keyup', function() {" +
+
+    "const texto = this.value.toLowerCase();" +
+
+    "const linhasTabela = document.querySelectorAll('#tabelaAlunos tr');" +
+
+    "linhasTabela.forEach(function(linha) {" +
+
+    "const conteudo = linha.innerText.toLowerCase();" +
+
+    "linha.style.display = conteudo.includes(texto) ? '' : 'none';" +
+
+    "});" +
+    "});" +
+
+    "</script>" ;
 
             responder(t, html);
         }

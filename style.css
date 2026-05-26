@@ -308,4 +308,150 @@ padding:20px;
 .header h1{
 font-size:1.6rem;
 }
+
+
+
 }
+
+/* =========================
+   TELA DE ALUNOS
+========================= */
+
+.alunos-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.search-input {
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid #dbe2ea;
+    min-width: 240px;
+    font-size: 14px;
+    outline: none;
+}
+
+.search-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+}
+
+.novo-btn {
+    background: #2563eb;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.novo-btn:hover {
+    background: #1d4ed8;
+}
+
+.logout-btn {
+    margin-top: auto;
+    color: #ef4444 !important;
+}
+
+.tabela-container {
+    overflow: hidden;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.alunos-table {
+    width: 100%;
+    min-width: 1200px;
+    border-collapse: collapse;
+}
+
+.alunos-table th {
+    background: #f1f5f9;
+    color: #64748b;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.alunos-table th,
+.alunos-table td {
+    padding: 18px 16px;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+.alunos-table tr:hover {
+    background: #f8fafc;
+}
+
+.action-btn {
+    padding: 10px 14px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    color: white;
+    display: inline-block;
+    margin: 4px;
+}
+
+.edit-btn {
+    background: #0ea5e9;
+}
+
+.delete-btn {
+    background: #ef4444;
+}
+
+.data-text {
+    color: #64748b;
+    margin-bottom: 5px;
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 900px) {
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 10px;
+    }
+
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 20px;
+    }
+
+    .alunos-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .search-input {
+        width: 100%;
+    }
+
+    .header-actions {
+        width: 100%;
+    }
+}
+
