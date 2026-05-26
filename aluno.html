@@ -2,147 +2,74 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Painel do Aluno</title>
-    <link rel="stylesheet" href="/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Área do Aluno - Gindri Pilates</title>
 </head>
 <body>
+    <nav class="sidebar">
+        <div class="logo-container">
+            <img src="/logo.png" alt="Logo">
+        </div>
+        <a href="/aluno" class="nav-link active">Meu Treino</a>
+        <a href="/" class="nav-link" style="margin-top: auto; color: var(--danger);">🚪 Sair</a>
+    </nav>
 
-<nav class="sidebar">
-
-    <div class="logo-container">
-        <img src="/logo.png">
-    </div>
-
-    <a href="/aluno" class="nav-link active">Meu Painel</a>
-
-    <a href="/" class="nav-link logout">🚪 Sair</a>
-
-</nav>
-
-<main class="main-content">
-
-    <div class="header">
-        <p id="dataAtual"></p>
-        <h1 id="nomeAluno">Boa noite</h1>
-    </div>
-
-    <div class="dashboard-grid">
-
-        <div class="dashboard-card">
-            <h3>FREQUÊNCIA</h3>
-            <p id="frequencia">-</p>
+    <main class="main-content">
+        <div class="header">
+            <p id="data-cabecalho" style="color: #64748b; margin: 0;"></p>
+            <h1 id="saudacao-cabecalho">Carregando...</h1>
         </div>
 
-        <div class="dashboard-card">
-            <h3>PONTOS</h3>
-            <p id="pontos">0</p>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <small>Aulas Realizadas</small>
+                <div>12</div>
+            </div>
+            <div class="stat-card">
+                <small>Frequência Mensal</small>
+                <div style="color: var(--secondary)">98%</div>
+            </div>
+            <div class="stat-card">
+                <small>Pagamento</small>
+                <div style="margin-top: 10px;"><span class="badge badge-success">EM DIA</span></div>
+            </div>
+            <div class="stat-card">
+                <small>Pontos Fidelidade</small>
+                <div>150</div>
+            </div>
         </div>
 
-        <div class="dashboard-card">
-            <h3>PAGAMENTO</h3>
-            <p id="pagamento">-</p>
+        <div class="content-card">
+            <h3>Exercícios Home Care</h3>
+            <p style="color: #64748b;">Conforme sua anamnese clínica, realize os exercícios abaixo diariamente.</p>
+            
+            <div style="margin-top: 20px; border-left: 4px solid var(--secondary); padding-left: 15px; margin-bottom: 15px;">
+                <strong>Alongamento de Cadeia Posterior</strong><br>
+                <small style="color: #64748b;">3 séries de 45 segundos</small>
+            </div>
+            <div style="border-left: 4px solid var(--secondary); padding-left: 15px;">
+                <strong>Mobilidade de Quadril</strong><br>
+                <small style="color: #64748b;">15 repetições</small>
+            </div>
         </div>
 
-        <div class="dashboard-card">
-            <h3>AULAS</h3>
-            <p id="aulas">0</p>
-        </div>
+        <footer>
+            <p>&copy; 2026 Alice Hemann Gindri. Todos os direitos reservados.</p>
+        </footer>
+    </main>
 
-    </div>
+    <script>
+        const dataAtual = new Date();
+        const opcoesData = { weekday: 'long', day: 'numeric', month: 'long' };
+        document.getElementById('data-cabecalho').innerText = dataAtual.toLocaleDateString('pt-BR', opcoesData);
 
-    <div class="content-card">
-
-        <h2>Minhas Informações</h2>
-
-        <table>
-
-            <tr>
-                <th>Patologia</th>
-                <th>Horários</th>
-                <th>Modalidades</th>
-            </tr>
-
-            <tr>
-                <td id="patologia"></td>
-                <td id="horarios"></td>
-                <td id="modalidades"></td>
-            </tr>
-
-        </table>
-
-    </div>
-
-</main>
-
-<script>
-
-const dias = [
-"domingo",
-"segunda-feira",
-"terça-feira",
-"quarta-feira",
-"quinta-feira",
-"sexta-feira",
-"sábado"
-];
-
-const meses = [
-"janeiro",
-"fevereiro",
-"março",
-"abril",
-"maio",
-"junho",
-"julho",
-"agosto",
-"setembro",
-"outubro",
-"novembro",
-"dezembro"
-];
-
-const hoje = new Date();
-
-document.getElementById("dataAtual").innerHTML =
-dias[hoje.getDay()] + ", " +
-hoje.getDate() + " de " +
-meses[hoje.getMonth()];
-
-fetch("/dadosAluno")
-.then(r => r.json())
-.then(dados => {
-
-    document.getElementById("nomeAluno").innerHTML =
-    "Boa noite, " + dados.nome;
-
-    document.getElementById("frequencia").innerHTML =
-    dados.frequencia;
-
-    document.getElementById("pontos").innerHTML =
-    dados.pontos;
-
-    document.getElementById("pagamento").innerHTML =
-    dados.pagamento;
-
-    document.getElementById("aulas").innerHTML =
-    dados.aulas;
-
-    document.getElementById("patologia").innerHTML =
-    dados.patologia;
-
-    document.getElementById("horarios").innerHTML =
-    dados.horarios;
-
-    document.getElementById("modalidades").innerHTML =
-    dados.modalidades;
-
-});
-
-</script>
-
+        const hora = dataAtual.getHours();
+        let saudacao = "Bom dia";
+        if (hora >= 12 && hora < 18) saudacao = "Boa tarde";
+        else if (hora >= 18) saudacao = "Boa noite";
+        
+        document.getElementById('saudacao-cabecalho').innerText = saudacao + ", Aluno(a)";
+    </script>
 </body>
 </html>
-
-
-
-
