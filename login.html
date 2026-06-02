@@ -7,21 +7,50 @@
     <title>Login - Gindri Pilates</title>
 </head>
 <body>
+
     <div class="login-container">
+
         <div class="login-box">
-            <img src="/logo.png" alt="Estúdio Gindri Pilates" class="logo-container" style="max-width: 180px; margin: 0 auto 20px auto; display: block;">
-            <p>Acesso ao Sistema</p>
-            
+
+            <img
+                src="/logo.png"
+                alt="Estúdio Gindri Pilates"
+                style="max-width:180px; margin:0 auto 20px auto; display:block;"
+            >
+
+            <h2 style="margin-bottom:10px;">Bem-vindo</h2>
+
+            <p>Acesse sua área</p>
+
             <form action="/autenticar" method="POST">
-                <input type="text" name="usuario" placeholder="Usuário (alice ou aluno)" required>
-                <input type="password" name="senha" placeholder="Senha (123)" required>
-                <button type="submit" class="btn-primary" style="margin-top: 15px;">ENTRAR</button>
+
+                <input
+                    type="text"
+                    name="usuario"
+                    placeholder="Usuário"
+                    required
+                >
+
+                <input
+                    type="password"
+                    name="senha"
+                    placeholder="Senha"
+                    required
+                >
+
+                <button
+                    type="submit"
+                    class="btn-primary"
+                    style="margin-top:15px; width:100%;"
+                >
+                    Entrar
+                </button>
+
             </form>
-            
-            <div style="font-size: 11px; color: #bbb; margin-top: 25px; line-height: 1.5;">
-                Utilize as credenciais de Instrutora ou Aluno
-            </div>
+
         </div>
+
     </div>
+
 </body>
 </html>

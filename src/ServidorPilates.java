@@ -10,7 +10,6 @@ import java.util.*;
 public class ServidorPilates {
 
     static final String ARQUIVO = "alunos.csv";
-
     static String alunoLogado = "";
 
     public static void main(String[] args) throws Exception {
@@ -23,6 +22,7 @@ public class ServidorPilates {
 
         servidor.createContext("/style.css", new ArquivoHandler("style.css", "text/css"));
         servidor.createContext("/logo.png", new ArquivoHandler("logo.png", "image/png"));
+        servidor.createContext("/studio.jpeg", new ArquivoHandler("studio.jpeg", "image/jpeg"));
 
         servidor.createContext("/", new ArquivoHandler("login.html", "text/html; charset=UTF-8"));
         servidor.createContext("/admin", new ArquivoHandler("admin.html", "text/html; charset=UTF-8"));
@@ -36,13 +36,9 @@ public class ServidorPilates {
         servidor.createContext("/editar", new EditarHandler());
 
         servidor.createContext("/nomeAluno", exchange -> {
-
             byte[] resp = alunoLogado.getBytes(StandardCharsets.UTF_8);
-
             exchange.sendResponseHeaders(200, resp.length);
-
             exchange.getResponseBody().write(resp);
-
             exchange.close();
         });
 
@@ -52,15 +48,13 @@ public class ServidorPilates {
     }
 
     static void criarArquivo() throws IOException {
-
         Path path = Paths.get(ARQUIVO);
 
         if (!Files.exists(path)) {
-
             Files.write(
                 path,
                 List.of(
-                    "1;Maria Silva;Dor lombar;true;sim;maria;123;2x Semana;120;Pago;10;Segunda 08:00|Quarta 08:00;Pilates Solo|Funcional;Pilates"
+                    "1;Maria Silva;Dor lombar;true;sim;maria;123;2x Semana;120;Pago;10;2026-06-02 08:00;Pilates"
                 )
             );
         }
@@ -77,15 +71,11 @@ public class ServidorPilates {
         }
 
         public void handle(HttpExchange t) throws IOException {
-
             byte[] dados = Files.readAllBytes(Paths.get(arquivo));
 
             t.getResponseHeaders().set("Content-Type", tipo);
-
             t.sendResponseHeaders(200, dados.length);
-
             t.getResponseBody().write(dados);
-
             t.close();
         }
     }
@@ -100,7 +90,6 @@ public class ServidorPilates {
             String senha = dados.getOrDefault("senha", "");
 
             if (usuario.equals("alice") && senha.equals("123")) {
-
                 redirect(t, "/admin");
                 return;
             }
@@ -108,29 +97,40 @@ public class ServidorPilates {
             List<String> alunos = Files.readAllLines(Paths.get(ARQUIVO));
 
             for (String aluno : alunos) {
-
                 String[] p = aluno.split(";");
 
                 if (p.length >= 7) {
-
                     String usuarioAluno = p[5];
                     String senhaAluno = p[6];
 
                     if (usuario.equals(usuarioAluno) && senha.equals(senhaAluno)) {
-
                         alunoLogado = p[1];
-
                         redirect(t, "/aluno");
-
                         return;
                     }
                 }
             }
 
-            responder(
-                t,
-                "<h2 style='font-family:sans-serif;text-align:center;margin-top:50px;'>Login inválido.<br><a href='/'>Voltar</a></h2>"
-            );
+            String html =
+                "<html>" +
+                "<head>" +
+                "<meta charset='UTF-8'>" +
+                "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+                "<link rel='stylesheet' href='/style.css'>" +
+                "<title>Login inválido</title>" +
+                "</head>" +
+                "<body>" +
+                "<div class='login-container'>" +
+                "<div class='login-box'>" +
+                "<h2>Login inválido</h2>" +
+                "<p>Usuário ou senha incorretos.</p>" +
+                "<a href='/' class='btn-primary' style='width:100%; margin-top:15px;'>Tentar novamente</a>" +
+                "</div>" +
+                "</div>" +
+                "</body>" +
+                "</html>";
+
+            responder(t, html);
         }
     }
 
@@ -144,11 +144,19 @@ public class ServidorPilates {
 
             int id = alunos.size() + 1;
 
+            String dataAula = dados.getOrDefault("dataAula", "");
+            String horario = dados.getOrDefault("horario", "");
+            String dataHorario = "";
+
+            if (!dataAula.isEmpty() && !horario.isEmpty()) {
+                dataHorario = dataAula + " " + horario;
+            }
+
             String linha =
                 id + ";" +
-                dados.get("nome") + ";" +
-                dados.get("patologia") + ";" +
-                dados.get("emDia") + ";" +
+                dados.getOrDefault("nome", "") + ";" +
+                dados.getOrDefault("patologia", "") + ";" +
+                dados.getOrDefault("emDia", "false") + ";" +
                 dados.getOrDefault("acesso", "nao") + ";" +
                 dados.getOrDefault("usuario", "") + ";" +
                 dados.getOrDefault("senha", "") + ";" +
@@ -156,9 +164,8 @@ public class ServidorPilates {
                 dados.getOrDefault("pontos", "0") + ";" +
                 dados.getOrDefault("pagamento", "") + ";" +
                 dados.getOrDefault("aulasRealizadas", "0") + ";" +
-                dados.getOrDefault("datasAulas", "") + ";" +
-                dados.getOrDefault("catalogoAulas", "") + ";" +
-                dados.getOrDefault("tipoTreino", "");
+                dataHorario + ";" +
+                dados.getOrDefault("modalidade", "");
 
             alunos.add(linha);
 
@@ -174,16 +181,18 @@ public class ServidorPilates {
 
             String query = t.getRequestURI().getQuery();
 
+            if (query == null || !query.contains("=")) {
+                redirect(t, "/listar");
+                return;
+            }
+
             String id = query.split("=")[1];
 
             List<String> alunos = Files.readAllLines(Paths.get(ARQUIVO));
-
             List<String> novos = new ArrayList<>();
 
             for (String aluno : alunos) {
-
                 if (!aluno.startsWith(id + ";")) {
-
                     novos.add(aluno);
                 }
             }
@@ -210,20 +219,27 @@ public class ServidorPilates {
 
                     if (p[0].equals(id)) {
 
+                        String dataAula = "";
+                        String horario = "";
+
+                        if (p.length >= 12 && p[11].contains(" ")) {
+                            String[] dh = p[11].split(" ");
+                            dataAula = dh[0];
+                            horario = dh.length > 1 ? dh[1] : "";
+                        }
+
                         String html =
                             "<html>" +
-
                             "<head>" +
                             "<meta charset='UTF-8'>" +
+                            "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
                             "<link rel='stylesheet' href='/style.css'>" +
+                            "<title>Editar Aluno</title>" +
                             "</head>" +
 
                             "<body>" +
-
                             "<main class='main-content'>" +
-
                             "<div class='content-card'>" +
-
                             "<h1>Editar Aluno</h1>" +
 
                             "<form method='POST' action='/editar'>" +
@@ -231,10 +247,10 @@ public class ServidorPilates {
                             "<input type='hidden' name='id' value='" + p[0] + "'>" +
 
                             "<label>Nome do aluno</label>" +
-                            "<input type='text' name='nome' value='" + p[1] + "'>" +
+                            "<input type='text' name='nome' value='" + valor(p, 1) + "'>" +
 
                             "<label>Patologia</label>" +
-                            "<input type='text' name='patologia' value='" + p[2] + "'>" +
+                            "<input type='text' name='patologia' value='" + valor(p, 2) + "'>" +
 
                             "<label>Status do pagamento</label>" +
                             "<select name='emDia'>" +
@@ -249,10 +265,10 @@ public class ServidorPilates {
                             "</select>" +
 
                             "<label>Usuário do aluno</label>" +
-                            "<input type='text' name='usuario' value='" + (p.length >= 6 ? p[5] : "") + "'>" +
+                            "<input type='text' name='usuario' value='" + valor(p, 5) + "'>" +
 
                             "<label>Senha do aluno</label>" +
-                            "<input type='password' name='senha' value='" + (p.length >= 7 ? p[6] : "") + "'>" +
+                            "<input type='password' name='senha' value='" + valor(p, 6) + "'>" +
 
                             "<label>Frequência semanal</label>" +
                             "<select name='frequencia'>" +
@@ -264,7 +280,7 @@ public class ServidorPilates {
                             "</select>" +
 
                             "<label>Pontos de fidelidade</label>" +
-                            "<input type='number' name='pontos' value='" + (p.length >= 9 ? p[8] : "0") + "'>" +
+                            "<input type='number' name='pontos' value='" + valorOuPadrao(p, 8, "0") + "'>" +
 
                             "<label>Status financeiro</label>" +
                             "<select name='pagamento'>" +
@@ -274,37 +290,31 @@ public class ServidorPilates {
                             "</select>" +
 
                             "<label>Quantidade de aulas realizadas</label>" +
-                            "<input type='number' name='aulasRealizadas' value='" + (p.length >= 11 ? p[10] : "0") + "'>" +
+                            "<input type='number' name='aulasRealizadas' value='" + valorOuPadrao(p, 10, "0") + "'>" +
 
-                            "<label>Datas e horários das aulas</label>" +
-                            "<textarea name='datasAulas'>" + (p.length >= 12 ? p[11] : "") + "</textarea>" +
+                            "<label>Data da aula</label>" +
+                            "<input type='date' name='dataAula' value='" + dataAula + "'>" +
 
-                            "<label>Modalidades</label>" +
-                            "<textarea name='catalogoAulas'>" + (p.length >= 13 ? p[12] : "") + "</textarea>" +
+                            "<label>Horário da aula</label>" +
+                            "<input type='time' name='horario' value='" + horario + "'>" +
 
-                            "<label>Tipo de treino</label>" +
-                            "<select name='tipoTreino'>" +
+                            "<label>Modalidade</label>" +
+                            "<select name='modalidade'>" +
                             "<option>Pilates</option>" +
                             "<option>Funcional</option>" +
                             "<option>Pilates e Funcional</option>" +
                             "</select>" +
 
                             "<br><br>" +
-
-                            "<button class='btn-primary'>Salvar Alterações</button>" +
-
+                            "<button class='btn-primary'>Salvar alterações</button>" +
                             "</form>" +
 
                             "</div>" +
-
                             "</main>" +
-
                             "</body>" +
-
                             "</html>";
 
                         responder(t, html);
-
                         return;
                     }
                 }
@@ -314,8 +324,15 @@ public class ServidorPilates {
                 Map<String, String> dados = formToMap(t);
 
                 List<String> alunos = Files.readAllLines(Paths.get(ARQUIVO));
-
                 List<String> novos = new ArrayList<>();
+
+                String dataAula = dados.getOrDefault("dataAula", "");
+                String horario = dados.getOrDefault("horario", "");
+                String dataHorario = "";
+
+                if (!dataAula.isEmpty() && !horario.isEmpty()) {
+                    dataHorario = dataAula + " " + horario;
+                }
 
                 for (String aluno : alunos) {
 
@@ -325,9 +342,9 @@ public class ServidorPilates {
 
                         novos.add(
                             p[0] + ";" +
-                            dados.get("nome") + ";" +
-                            dados.get("patologia") + ";" +
-                            dados.get("emDia") + ";" +
+                            dados.getOrDefault("nome", "") + ";" +
+                            dados.getOrDefault("patologia", "") + ";" +
+                            dados.getOrDefault("emDia", "false") + ";" +
                             dados.getOrDefault("acesso", "nao") + ";" +
                             dados.getOrDefault("usuario", "") + ";" +
                             dados.getOrDefault("senha", "") + ";" +
@@ -335,13 +352,11 @@ public class ServidorPilates {
                             dados.getOrDefault("pontos", "0") + ";" +
                             dados.getOrDefault("pagamento", "") + ";" +
                             dados.getOrDefault("aulasRealizadas", "0") + ";" +
-                            dados.getOrDefault("datasAulas", "") + ";" +
-                            dados.getOrDefault("catalogoAulas", "") + ";" +
-                            dados.getOrDefault("tipoTreino", "")
+                            dataHorario + ";" +
+                            dados.getOrDefault("modalidade", "")
                         );
 
                     } else {
-
                         novos.add(aluno);
                     }
                 }
@@ -366,136 +381,127 @@ public class ServidorPilates {
                 String[] p = aluno.split(";");
 
                 linhas.append("<tr>")
-                    .append("<td>").append(p[1]).append("</td>")
-                    .append("<td>").append(p[2]).append("</td>")
-                    .append("<td>").append(p.length >= 8 ? p[7] : "").append("</td>")
-                    .append("<td>").append(p.length >= 9 ? p[8] : "").append("</td>")
-                    .append("<td>").append(p.length >= 10 ? p[9] : "").append("</td>")
-                    .append("<td>").append(p.length >= 11 ? p[10] : "").append("</td>")
-                    .append("<td>").append(p.length >= 12 ? p[11] : "").append("</td>")
-                    .append("<td>").append(p.length >= 13 ? p[12] : "").append("</td>")
-                    .append("<td>").append(p.length >= 14 ? p[13] : "").append("</td>")
+                    .append("<td>").append(valor(p, 1)).append("</td>")
+                    .append("<td>").append(valor(p, 2)).append("</td>")
+                    .append("<td>").append(valor(p, 7)).append("</td>")
+                    .append("<td>").append(valor(p, 8)).append("</td>")
+                    .append("<td>").append(valor(p, 9)).append("</td>")
+                    .append("<td>").append(valor(p, 10)).append("</td>")
+                    .append("<td>").append(valor(p, 11)).append("</td>")
+                    .append("<td>").append(valor(p, 12)).append("</td>")
                     .append("<td>")
                     .append("<a class='action-btn edit-btn' href='/editar?id=")
-                    .append(p[0])
+                    .append(valor(p, 0))
                     .append("'>Editar</a> ")
-
                     .append("<a class='action-btn delete-btn' href='/excluir?id=")
-                    .append(p[0])
+                    .append(valor(p, 0))
                     .append("'>Excluir</a>")
-
                     .append("</td>")
                     .append("</tr>");
             }
 
             String html =
-    "<html>" +
+                "<html>" +
 
-    "<head>" +
-    "<meta charset='UTF-8'>" +
-    "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
-    "<link rel='stylesheet' href='/style.css'>" +
-    "<title>Alunos</title>" +
-    "</head>" +
+                "<head>" +
+                "<meta charset='UTF-8'>" +
+                "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+                "<link rel='stylesheet' href='/style.css'>" +
+                "<title>Alunos</title>" +
+                "</head>" +
 
-    "<body>" +
+                "<body>" +
 
-    // SIDEBAR
-    "<nav class='sidebar'>" +
+                "<nav class='sidebar'>" +
+                "<div class='logo-container'>" +
+                "<img src='/logo.png'>" +
+                "</div>" +
 
-    "<div class='logo-container'>" +
-    "<img src='/logo.png'>" +
-    "</div>" +
+                "<a href='/admin' class='nav-link'>Painel</a>" +
+                "<a href='/listar' class='nav-link active'>Alunos</a>" +
+                "<a href='/cadastro' class='nav-link'>Novo Cadastro</a>" +
+                "<a href='javascript:history.back()' class='nav-link'>Voltar</a>" +
+                "<a href='/' class='nav-link logout-btn'>Sair</a>" +
+                "</nav>" +
 
-    "<a href='/admin' class='nav-link'>🏠 Painel</a>" +
-    "<a href='/listar' class='nav-link active'>👨‍🎓 Alunos</a>" +
-    "<a href='/cadastro' class='nav-link'>➕ Novo Cadastro</a>" +
+                "<main class='main-content'>" +
 
-    // BOTÃO VOLTAR
-    "<a href='javascript:history.back()' class='nav-link'>⬅ Voltar</a>" +
+                "<div class='header alunos-header'>" +
+                "<div>" +
+                "<p class='data-text'>" + LocalDate.now() + "</p>" +
+                "<h1>Alunos cadastrados</h1>" +
+                "</div>" +
 
-    "<a href='/' class='nav-link logout-btn'>🚪 Sair</a>" +
+                "<div class='header-actions'>" +
+                "<input type='text' id='buscarAluno' placeholder='Buscar aluno...' class='search-input'>" +
+                "<a href='/cadastro' class='novo-btn'>+ Novo aluno</a>" +
+                "</div>" +
+                "</div>" +
 
-    "</nav>" +
+                "<div class='content-card tabela-container'>" +
+                "<div class='table-responsive'>" +
 
-    // CONTEÚDO PRINCIPAL
-    "<main class='main-content'>" +
+                "<table class='alunos-table'>" +
 
-    "<div class='header alunos-header'>" +
+                "<thead>" +
+                "<tr>" +
+                "<th>Nome</th>" +
+                "<th>Patologia</th>" +
+                "<th>Frequência</th>" +
+                "<th>Pontos</th>" +
+                "<th>Pagamento</th>" +
+                "<th>Aulas</th>" +
+                "<th>Data e horário</th>" +
+                "<th>Modalidade</th>" +
+                "<th>Ações</th>" +
+                "</tr>" +
+                "</thead>" +
 
-    "<div>" +
-    "<p class='data-text'>" + LocalDate.now() + "</p>" +
-    "<h1>Alunos cadastrados</h1>" +
-    "</div>" +
+                "<tbody id='tabelaAlunos'>" +
+                linhas +
+                "</tbody>" +
 
-    "<div class='header-actions'>" +
+                "</table>" +
+                "</div>" +
+                "</div>" +
 
-    // CAMPO BUSCA
-    "<input type='text' id='buscarAluno' placeholder='Buscar aluno...' class='search-input'>" +
+                "<footer>" +
+                "<p>&copy; 2026 Gindri Pilates. Todos os direitos reservados.</p>" +
+                "</footer>" +
 
-    "<a href='/cadastro' class='novo-btn'>+ Novo aluno</a>" +
+                "</main>" +
 
-    "</div>" +
-    "</div>" +
+                "<script>" +
+                "const busca = document.getElementById('buscarAluno');" +
+                "busca.addEventListener('keyup', function() {" +
+                "const texto = this.value.toLowerCase();" +
+                "const linhasTabela = document.querySelectorAll('#tabelaAlunos tr');" +
+                "linhasTabela.forEach(function(linha) {" +
+                "const conteudo = linha.innerText.toLowerCase();" +
+                "linha.style.display = conteudo.includes(texto) ? '' : 'none';" +
+                "});" +
+                "});" +
+                "</script>" +
 
-    // CARD
-    "<div class='content-card tabela-container'>" +
-
-    // RESPONSIVIDADE DA TABELA
-    "<div class='table-responsive'>" +
-
-    "<table class='alunos-table'>" +
-
-    "<thead>" +
-    "<tr>" +
-    "<th>Nome</th>" +
-    "<th>Patologia</th>" +
-    "<th>Frequência</th>" +
-    "<th>Pontos</th>" +
-    "<th>Pagamento</th>" +
-    "<th>Aulas</th>" +
-    "<th>Horários</th>" +
-    "<th>Modalidades</th>" +
-    "<th>Treino</th>" +
-    "<th>Ações</th>" +
-    "</tr>" +
-    "</thead>" +
-
-    "<tbody id='tabelaAlunos'>" +
-
-    linhas +
-
-    "</tbody>" +
-
-    "</table>" +
-    "</div>" +
-    "</div>" +
-    "</main>" +
-
-    // SCRIPT DE BUSCA
-    "<script>" +
-
-    "const busca = document.getElementById('buscarAluno');" +
-
-    "busca.addEventListener('keyup', function() {" +
-
-    "const texto = this.value.toLowerCase();" +
-
-    "const linhasTabela = document.querySelectorAll('#tabelaAlunos tr');" +
-
-    "linhasTabela.forEach(function(linha) {" +
-
-    "const conteudo = linha.innerText.toLowerCase();" +
-
-    "linha.style.display = conteudo.includes(texto) ? '' : 'none';" +
-
-    "});" +
-    "});" +
-
-    "</script>" ;
+                "</body>" +
+                "</html>";
 
             responder(t, html);
         }
+    }
+
+    static String valor(String[] p, int indice) {
+        if (p.length > indice) {
+            return p[indice];
+        }
+        return "";
+    }
+
+    static String valorOuPadrao(String[] p, int indice, String padrao) {
+        if (p.length > indice && !p[indice].isEmpty()) {
+            return p[indice];
+        }
+        return padrao;
     }
 
     static Map<String, String> formToMap(HttpExchange t) throws IOException {
@@ -507,12 +513,15 @@ public class ServidorPilates {
 
         Map<String, String> dados = new HashMap<>();
 
+        if (form.isEmpty()) {
+            return dados;
+        }
+
         for (String item : form.split("&")) {
 
-            String[] p = item.split("=");
+            String[] p = item.split("=", 2);
 
             if (p.length == 2) {
-
                 dados.put(
                     URLDecoder.decode(p[0], StandardCharsets.UTF_8),
                     URLDecoder.decode(p[1], StandardCharsets.UTF_8)
@@ -542,13 +551,7 @@ public class ServidorPilates {
     static void redirect(HttpExchange t, String url) throws IOException {
 
         t.getResponseHeaders().add("Location", url);
-
         t.sendResponseHeaders(302, -1);
-
         t.close();
     }
 }
-
-
-
-

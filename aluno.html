@@ -11,65 +11,116 @@
         <div class="logo-container">
             <img src="/logo.png" alt="Logo">
         </div>
-        <a href="/aluno" class="nav-link active">Meu Treino</a>
-        <a href="/" class="nav-link" style="margin-top: auto; color: var(--danger);">🚪 Sair</a>
+
+        <a href="/aluno" class="nav-link active">Minha Área</a>
+        <a href="/" class="nav-link logout-btn">Sair</a>
     </nav>
 
     <main class="main-content">
         <div class="header">
-            <p id="data-cabecalho" style="color: #64748b; margin: 0;"></p>
-            <h1 id="saudacao-cabecalho">Carregando...</h1>
+            <div>
+                <p id="data-cabecalho" class="data-text"></p>
+                <h1 id="saudacao-cabecalho">Carregando...</h1>
+            </div>
         </div>
 
         <div class="stats-grid">
             <div class="stat-card">
-                <small>Aulas Realizadas</small>
-                <div>12</div>
+                <small>Aulas realizadas</small>
+                <div id="aulas-realizadas">--</div>
             </div>
+
             <div class="stat-card">
-                <small>Frequência Mensal</small>
-                <div style="color: var(--secondary)">98%</div>
+                <small>Frequência semanal</small>
+                <div id="frequencia-aluno" style="color: var(--secondary)">--</div>
             </div>
+
             <div class="stat-card">
                 <small>Pagamento</small>
-                <div style="margin-top: 10px;"><span class="badge badge-success">EM DIA</span></div>
+                <div style="margin-top: 10px;">
+                    <span id="pagamento-aluno" class="badge badge-success">--</span>
+                </div>
             </div>
+
             <div class="stat-card">
-                <small>Pontos Fidelidade</small>
-                <div>150</div>
+                <small>Pontos fidelidade</small>
+                <div id="pontos-aluno">--</div>
             </div>
         </div>
 
         <div class="content-card">
             <h3>Exercícios Home Care</h3>
-            <p style="color: #64748b;">Conforme sua anamnese clínica, realize os exercícios abaixo diariamente.</p>
-            
+
+            <p style="color: #64748b;">
+                Aqui ficarão os exercícios indicados para o aluno realizar em casa.
+            </p>
+
             <div style="margin-top: 20px; border-left: 4px solid var(--secondary); padding-left: 15px; margin-bottom: 15px;">
-                <strong>Alongamento de Cadeia Posterior</strong><br>
+                <strong>Alongamento de cadeia posterior</strong><br>
                 <small style="color: #64748b;">3 séries de 45 segundos</small>
             </div>
+
             <div style="border-left: 4px solid var(--secondary); padding-left: 15px;">
-                <strong>Mobilidade de Quadril</strong><br>
+                <strong>Mobilidade de quadril</strong><br>
                 <small style="color: #64748b;">15 repetições</small>
             </div>
         </div>
 
         <footer>
-            <p>&copy; 2026 Alice Hemann Gindri. Todos os direitos reservados.</p>
+            <p>&copy; 2026 Gindri Pilates. Todos os direitos reservados.</p>
         </footer>
     </main>
 
     <script>
         const dataAtual = new Date();
-        const opcoesData = { weekday: 'long', day: 'numeric', month: 'long' };
-        document.getElementById('data-cabecalho').innerText = dataAtual.toLocaleDateString('pt-BR', opcoesData);
+
+        const opcoesData = {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        };
+
+        document.getElementById('data-cabecalho').innerText =
+            dataAtual.toLocaleDateString('pt-BR', opcoesData);
 
         const hora = dataAtual.getHours();
+
         let saudacao = "Bom dia";
-        if (hora >= 12 && hora < 18) saudacao = "Boa tarde";
-        else if (hora >= 18) saudacao = "Boa noite";
-        
-        document.getElementById('saudacao-cabecalho').innerText = saudacao + ", Aluno(a)";
+
+        if (hora >= 12 && hora < 18) {
+            saudacao = "Boa tarde";
+        } else if (hora >= 18) {
+            saudacao = "Boa noite";
+        }
+
+        fetch('/nomeAluno')
+            .then(resposta => resposta.text())
+            .then(nome => {
+                if (nome.trim() !== "") {
+                    document.getElementById('saudacao-cabecalho').innerText =
+                        saudacao + ", " + nome;
+                } else {
+                    document.getElementById('saudacao-cabecalho').innerText =
+                        saudacao + ", Aluno(a)";
+                }
+            })
+            .catch(() => {
+                document.getElementById('saudacao-cabecalho').innerText =
+                    saudacao + ", Aluno(a)";
+            });
+
+        /*
+            Por enquanto esses valores ainda ficam fixos,
+            porque o ServidorPilates.java atual ainda usa CSV.
+
+            Depois, quando conectarmos totalmente com o MySQL,
+            esses dados poderão vir direto do banco.
+        */
+        document.getElementById('aulas-realizadas').innerText = "12";
+        document.getElementById('frequencia-aluno').innerText = "2x Semana";
+        document.getElementById('pagamento-aluno').innerText = "EM DIA";
+        document.getElementById('pontos-aluno').innerText = "150";
     </script>
 </body>
 </html>

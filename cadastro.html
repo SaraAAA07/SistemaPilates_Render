@@ -11,77 +11,115 @@
         <div class="logo-container">
             <img src="/logo.png" alt="Logo">
         </div>
+
         <a href="/admin" class="nav-link">Painel</a>
         <a href="/listar" class="nav-link">Alunos</a>
         <a href="/cadastro" class="nav-link active">Novo Cadastro</a>
-        <a href="/" class="nav-link" style="margin-top: auto; color: var(--danger);">🚪 Sair</a>
+        <a href="/" class="nav-link logout-btn">Sair</a>
     </nav>
 
     <main class="main-content">
         <div class="header">
-            <p id="data-cabecalho" style="color: #64748b; margin: 0;"></p>
-            <h1>Cadastrar Novo Aluno</h1>
+            <div>
+                <p id="data-cabecalho" class="data-text"></p>
+                <h1>Cadastrar Novo Aluno</h1>
+            </div>
         </div>
 
         <div class="content-card">
-
-            <div class="form-group">
-    <label style="color: #64748b; font-size: 14px;">
-        Permitir acesso ao sistema?
-    </label>
-
-    <select name="acesso" id="acesso" onchange="toggleLoginFields()">
-        <option value="nao">Não</option>
-        <option value="sim">Sim</option>
-    </select>
-</div>
-
-<div id="loginFields" style="display:none;">
-    
-    <div class="form-group">
-        <label>Usuário</label>
-        <input type="text" name="usuario" placeholder="Usuário do aluno">
-    </div>
-
-    <div class="form-group">
-        <label>Senha</label>
-        <input type="password" name="senha" placeholder="Senha do aluno">
-    </div>
-
-</div>
-
-<script>
-function toggleLoginFields() {
-    const acesso = document.getElementById("acesso").value;
-    const fields = document.getElementById("loginFields");
-
-    fields.style.display = acesso === "sim" ? "block" : "none";
-}
-</script>
-
             <form action="/salvar" method="POST">
-                
+
                 <div class="form-group">
-                    <label for="nome" style="color: #64748b; font-size: 14px;">Nome Completo</label>
+                    <label for="nome">Nome completo</label>
                     <input type="text" id="nome" name="nome" placeholder="Ex: Maria da Silva" required>
                 </div>
 
-                <div class="form-group" style="display: flex; gap: 20px;">
-                    <div style="flex: 1;">
-                        <label for="patologia" style="color: #64748b; font-size: 14px;">Patologia / Queixa Principal</label>
-                        <input type="text" id="patologia" name="patologia" placeholder="Ex: Dor lombar, Hérnia..." required>
+                <div class="form-group">
+                    <label for="patologia">Patologia / Queixa principal</label>
+                    <input type="text" id="patologia" name="patologia" placeholder="Ex: Dor lombar, hérnia..." required>
+                </div>
+
+                <div class="form-group">
+                    <label for="emDia">Status do pagamento</label>
+                    <select id="emDia" name="emDia" required>
+                        <option value="true">Pagamento em dia</option>
+                        <option value="false">Pendente / atrasado</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="acesso">Permitir acesso ao sistema?</label>
+                    <select name="acesso" id="acesso" onchange="toggleLoginFields()">
+                        <option value="nao">Não</option>
+                        <option value="sim">Sim</option>
+                    </select>
+                </div>
+
+                <div id="loginFields" style="display:none;">
+                    <div class="form-group">
+                        <label for="usuario">Usuário do aluno</label>
+                        <input type="text" id="usuario" name="usuario" placeholder="Ex: maria">
                     </div>
-                    <div style="flex: 1;">
-                        <label for="emDia" style="color: #64748b; font-size: 14px;">Status do Pagamento</label>
-                        <select id="emDia" name="emDia" required>
-                            <option value="true">Pagamento em Dia</option>
-                            <option value="false">Pendente / Atrasado</option>
-                        </select>
+
+                    <div class="form-group">
+                        <label for="senha">Senha do aluno</label>
+                        <input type="password" id="senha" name="senha" placeholder="Digite uma senha">
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label for="frequencia">Frequência semanal</label>
+                    <select id="frequencia" name="frequencia">
+                        <option>1x Semana</option>
+                        <option>2x Semana</option>
+                        <option>3x Semana</option>
+                        <option>4x Semana</option>
+                        <option>5x Semana</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="pontos">Pontos de fidelidade</label>
+                    <input type="number" id="pontos" name="pontos" value="0" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="pagamento">Status financeiro</label>
+                    <select id="pagamento" name="pagamento">
+                        <option>Pago</option>
+                        <option>Pendente</option>
+                        <option>Atrasado</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="aulasRealizadas">Quantidade de aulas realizadas</label>
+                    <input type="number" id="aulasRealizadas" name="aulasRealizadas" value="0" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="dataAula">Data da aula</label>
+                    <input type="date" id="dataAula" name="dataAula">
+                </div>
+
+                <div class="form-group">
+                    <label for="horario">Horário da aula</label>
+                    <input type="time" id="horario" name="horario">
+                </div>
+
+                <div class="form-group">
+                    <label for="modalidade">Modalidade</label>
+                    <select id="modalidade" name="modalidade">
+                        <option>Pilates</option>
+                        <option>Funcional</option>
+                        <option>Pilates e Funcional</option>
+                    </select>
+                </div>
+
                 <div style="margin-top: 30px; text-align: right;">
-                    <button type="submit" class="btn-primary" style="width: auto;">💾 Salvar Cadastro no Banco</button>
+                    <button type="submit" class="btn-primary" style="width: auto;">
+                        Salvar cadastro
+                    </button>
                 </div>
             </form>
         </div>
@@ -92,8 +130,22 @@ function toggleLoginFields() {
     </main>
 
     <script>
-        const opcoesData = { weekday: 'long', day: 'numeric', month: 'long' };
-        document.getElementById('data-cabecalho').innerText = new Date().toLocaleDateString('pt-BR', opcoesData);
+        function toggleLoginFields() {
+            const acesso = document.getElementById("acesso").value;
+            const fields = document.getElementById("loginFields");
+
+            fields.style.display = acesso === "sim" ? "block" : "none";
+        }
+
+        const opcoesData = {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        };
+
+        document.getElementById('data-cabecalho').innerText =
+            new Date().toLocaleDateString('pt-BR', opcoesData);
     </script>
 </body>
 </html>

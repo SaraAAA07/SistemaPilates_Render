@@ -257,6 +257,17 @@ display:flex;
 justify-content:center;
 align-items:center;
 padding:30px;
+
+background:
+linear-gradient(
+rgba(0,0,0,0.45),
+rgba(0,0,0,0.45)
+),
+url('/studio.jpeg');
+
+background-size:cover;
+background-position:center;
+background-repeat:no-repeat;
 }
 
 .login-box{
