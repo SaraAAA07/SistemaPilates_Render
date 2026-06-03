@@ -23,6 +23,7 @@ public class ServidorPilates {
         servidor.createContext("/style.css", new ArquivoHandler("style.css", "text/css"));
         servidor.createContext("/logo.png", new ArquivoHandler("logo.png", "image/png"));
         servidor.createContext("/studio.jpeg", new ArquivoHandler("studio.jpeg", "image/jpeg"));
+        servidor.createContext("/pilates.jpg", new ArquivoHandler("pilates.jpg", "image/jpeg"));
 
         servidor.createContext("/", new ArquivoHandler("login.html", "text/html; charset=UTF-8"));
         servidor.createContext("/cadastro", new ArquivoHandler("cadastro.html", "text/html; charset=UTF-8"));
@@ -83,12 +84,12 @@ public class ServidorPilates {
             String usuario = dados.getOrDefault("usuario", "").trim();
             String senha = dados.getOrDefault("senha", "").trim();
 
-            if (usuario.equals("alice") && senha.equals("123")) {
+            if (usuario.equalsIgnoreCase("alice") && senha.equals("123")) {
                 redirect(t, "/admin");
                 return;
             }
 
-            String sql = "SELECT id, nome FROM alunos WHERE usuario = ? AND senha = ?";
+            String sql = "SELECT id, nome FROM alunos WHERE LOWER(usuario) = LOWER(?) AND senha = ?";
 
             try (Connection conn = conectar();
                  PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -131,8 +132,8 @@ public class ServidorPilates {
 
             String sqlAluno =
                 "INSERT INTO alunos " +
-                "(nome, patologia, pagamento_em_dia, usuario, senha, frequencia, pontos, pagamento, aulas_realizadas, datas_aulas, modalidades) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "(nome, patologia, pagamento_em_dia, usuario, senha, frequencia, pontos, pagamento, aulas_realizadas, datas_aulas, modalidades, home_care) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             try (Connection conn = conectar();
                  PreparedStatement stmt = conn.prepareStatement(sqlAluno, Statement.RETURN_GENERATED_KEYS)) {
@@ -148,6 +149,7 @@ public class ServidorPilates {
                 stmt.setInt(9, inteiro(dados.getOrDefault("aulasRealizadas", "0")));
                 stmt.setString(10, dataHorario);
                 stmt.setString(11, modalidade);
+                stmt.setString(12, dados.getOrDefault("homeCare", ""));
 
                 stmt.executeUpdate();
 
@@ -244,7 +246,7 @@ public class ServidorPilates {
                 String sql =
                     "UPDATE alunos SET " +
                     "nome = ?, patologia = ?, pagamento_em_dia = ?, usuario = ?, senha = ?, frequencia = ?, " +
-                    "pontos = ?, pagamento = ?, aulas_realizadas = ?, datas_aulas = ?, modalidades = ? " +
+                    "pontos = ?, pagamento = ?, aulas_realizadas = ?, datas_aulas = ?, modalidades = ?, home_care = ? " +
                     "WHERE id = ?";
 
                 try (Connection conn = conectar();
@@ -261,7 +263,8 @@ public class ServidorPilates {
                     stmt.setInt(9, inteiro(dados.getOrDefault("aulasRealizadas", "0")));
                     stmt.setString(10, dataHorario);
                     stmt.setString(11, modalidade);
-                    stmt.setInt(12, id);
+                    stmt.setString(12, dados.getOrDefault("homeCare", ""));
+                    stmt.setInt(13, id);
 
                     stmt.executeUpdate();
 
@@ -472,7 +475,7 @@ public class ServidorPilates {
             "</nav>" +
 
             "<main class='main-content'>" +
-            "<div class='header'>" +
+            "<div class='header admin-hero'>" +
             "<div>" +
             "<p class='data-text'>" + LocalDate.now() + "</p>" +
             "<h1>Bem-vinda, Alice</h1>" +
@@ -511,6 +514,19 @@ public class ServidorPilates {
             badge = "badge-danger";
         }
 
+        String homeCare = texto(rs, "home_care");
+
+        if (homeCare.isEmpty()) {
+            homeCare = "Nenhum exercício Home Care foi cadastrado ainda.";
+        }
+
+        homeCare = homeCare
+            .replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace("\r\n", "<br>")
+            .replace("\n", "<br>");
+
         return "<html>" +
             "<head>" +
             "<meta charset='UTF-8'>" +
@@ -543,14 +559,9 @@ public class ServidorPilates {
 
             "<div class='content-card'>" +
             "<h3>Exercícios Home Care</h3>" +
-            "<p style='color:#64748b;'>Aqui ficarão os exercícios indicados para o aluno realizar em casa.</p>" +
-            "<div style='margin-top:20px; border-left:4px solid var(--secondary); padding-left:15px; margin-bottom:15px;'>" +
-            "<strong>Alongamento de cadeia posterior</strong><br>" +
-            "<small style='color:#64748b;'>3 séries de 45 segundos</small>" +
-            "</div>" +
-            "<div style='border-left:4px solid var(--secondary); padding-left:15px;'>" +
-            "<strong>Mobilidade de quadril</strong><br>" +
-            "<small style='color:#64748b;'>15 repetições</small>" +
+            "<p style='color:#64748b;'>Exercícios indicados pela instrutora:</p>" +
+            "<div style='margin-top:20px; border-left:4px solid var(--secondary); padding-left:15px; line-height:1.8;'>" +
+            homeCare +
             "</div>" +
             "</div>" +
 
@@ -617,6 +628,7 @@ public class ServidorPilates {
 
             "<label>Frequência semanal</label>" +
             "<select name='frequencia'>" +
+            "<option>" + texto(rs, "frequencia") + "</option>" +
             "<option>1x Semana</option>" +
             "<option>2x Semana</option>" +
             "<option>3x Semana</option>" +
@@ -629,6 +641,7 @@ public class ServidorPilates {
 
             "<label>Status financeiro</label>" +
             "<select name='pagamento'>" +
+            "<option>" + texto(rs, "pagamento") + "</option>" +
             "<option>Pago</option>" +
             "<option>Pendente</option>" +
             "<option>Atrasado</option>" +
@@ -650,6 +663,11 @@ public class ServidorPilates {
             "<option>Funcional</option>" +
             "<option>Pilates e Funcional</option>" +
             "</select>" +
+
+            "<label>Exercícios Home Care</label>" +
+            "<textarea name='homeCare' rows='6' placeholder='Ex: Alongamento de cadeia posterior - 3 séries de 45 segundos'>" +
+            texto(rs, "home_care") +
+            "</textarea>" +
 
             "<br><br>" +
             "<button class='btn-primary'>Salvar alterações</button>" +

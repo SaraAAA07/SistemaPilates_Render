@@ -252,22 +252,19 @@ color:#991b1b;
 }
 
 .login-container{
-width:100%;
-display:flex;
-justify-content:center;
-align-items:center;
-padding:30px;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:30px;
 
-background:
-linear-gradient(
-rgba(0,0,0,0.45),
-rgba(0,0,0,0.45)
-),
-url('/pilates.jpg');
+    background:
+        linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
+        url('/pilates.jpg');
 
-background-size:cover;
-background-position:center;
-background-repeat:no-repeat;
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
 }
 
 .login-box{
@@ -464,5 +461,20 @@ font-size:1.6rem;
     .header-actions {
         width: 100%;
     }
+}
+
+.admin-hero{
+    background:
+        linear-gradient(rgba(255,255,255,0.88), rgba(255,255,255,0.88)),
+        url('/studio.jpeg');
+
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+
+    padding:35px;
+    border-radius:28px;
+    margin-bottom:28px;
+    box-shadow:0 10px 30px rgba(15,23,42,0.06);
 }
 
