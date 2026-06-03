@@ -1,60 +1,42 @@
-// Importa as classes necessárias para trabalhar com banco de dados
-import java.sql.Connection;          // Representa a conexão com o banco
-import java.sql.DriverManager;       // Responsavel por abrir a conexão
-import java.sql.PreparedStatement;   // Usado para executar comandos SQL com segurança
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 
 public class TesteConexao {
 
     public static void main(String[] args) {
 
-        // 1. Dados para conectar ao banco de dados
-        String url = "jdbc:mysql://localhost:3306/gindri_pilates"; 
-        // url = endereço do banco (tipo, local e nome do banco)
+        String host = System.getenv("DB_HOST");
+        String port = System.getenv("DB_PORT");
+        String database = System.getenv("DB_NAME");
+        String usuario = System.getenv("DB_USER");
+        String senha = System.getenv("DB_PASS");
 
-        String usuario = "root"; 
-        // usuário do banco (quem está acessando)
-
-        String senha = "ems@uri.santiago2026";    
-        // senha do banco
+        String url = "jdbc:mysql://" + host + ":" + port + "/" + database + "?sslMode=REQUIRED";
 
         try {
-            // Mensagem só para mostrar no console que está tentando conectar
-            System.out.println("Tentando conectar ao banco do Estúdio...");
-            
-            // 2. Fazendo a conexão com o banco
+            System.out.println("Tentando conectar ao banco Aiven...");
+
             Connection conexao = DriverManager.getConnection(url, usuario, senha);
-            // Aqui ele realmente abre a conexão com o MySQL
 
-            System.out.println("DEU CERTO! Conectado com sucesso!");
+            System.out.println("Conectado com sucesso!");
 
-            // 3. Criando um comando SQL para inserir um aluno
             String sql = "INSERT INTO alunos (nome, patologia, pagamento_em_dia) VALUES (?, ?, ?)";
-            // O ? são espaços que depois vamos preencher ( evita erro e ataque SQL)
 
-            // Prepara o comando para ser executado
             PreparedStatement comando = conexao.prepareStatement(sql);
 
-            // Preenche os valores nos ?
-            comando.setString(1, "João Silva Teste"); 
-            // 1º ? recebe o nome
+            comando.setString(1, "Aluno Teste Aiven");
+            comando.setString(2, "Teste de conexão");
+            comando.setBoolean(3, true);
 
-            comando.setString(2, "Dor Lombar Severa"); 
-            // 2º ? recebe a patologia
-
-            comando.setBoolean(3, true); 
-            // 3º ? recebe se o pagamento está em dia (true = sim)
-
-            // Executa o comando no banco
             comando.execute();
-            
-            System.out.println("Aluno João Silva salvo direto no MySQL!");
-            
-            // 4. Fecha a conexão com o banco (muito importante!)
+
+            System.out.println("Aluno salvo no MySQL Aiven!");
+
             conexao.close();
 
         } catch (Exception e) {
-            // Se der erro, mostra a mensagem no console
-            System.out.println("Ocorreu um erro: " + e.getMessage());
+            System.out.println("Erro ao conectar: " + e.getMessage());
         }
     }
 }
