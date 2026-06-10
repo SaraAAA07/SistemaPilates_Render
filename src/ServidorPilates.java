@@ -23,7 +23,7 @@ public class ServidorPilates {
         servidor.createContext("/style.css", new ArquivoHandler("style.css", "text/css"));
         servidor.createContext("/logo.png", new ArquivoHandler("logo.png", "image/png"));
         servidor.createContext("/studio.jpeg", new ArquivoHandler("studio.jpeg", "image/jpeg"));
-        servidor.createContext("/pilates.jpg", new ArquivoHandler("pilates.jpg", "image/jpeg"));
+        servidor.createContext("/pilatesfundo.jpg", new ArquivoHandler("pilatesfundo.jpg", "image/jpeg"));
 
         servidor.createContext("/", new ArquivoHandler("login.html", "text/html; charset=UTF-8"));
         servidor.createContext("/cadastro", new ArquivoHandler("cadastro.html", "text/html; charset=UTF-8"));
