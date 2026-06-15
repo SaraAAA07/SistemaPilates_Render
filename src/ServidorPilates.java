@@ -573,24 +573,24 @@ public class ServidorPilates {
 
     static String telaEditar(ResultSet rs) throws SQLException {
 
-        String dataAula = "";
-        String horario = "";
+    String dataAula = "";
+    String horario = "";
 
-        Date data = rs.getDate("data_aula");
-        Time hora = rs.getTime("horario");
+    Date data = rs.getDate("data_aula");
+    Time hora = rs.getTime("horario");
 
-        if (data != null) {
-            dataAula = data.toString();
-        }
+    if (data != null) {
+        dataAula = data.toString();
+    }
 
-        if (hora != null) {
-            horario = hora.toString().substring(0, 5);
-        }
+    if (hora != null) {
+        horario = hora.toString().substring(0, 5);
+    }
 
-        String modalidade = texto(rs, "modalidade_aula");
-        if (modalidade.isEmpty()) {
-            modalidade = texto(rs, "modalidades");
-        }
+    String modalidade = texto(rs, "modalidade_aula");
+    if (modalidade.isEmpty()) {
+        modalidade = texto(rs, "modalidades");
+    }
 
         return "<html>" +
             "<head>" +
@@ -601,31 +601,78 @@ public class ServidorPilates {
             "</head>" +
 
             "<body>" +
+
+            "<nav class='sidebar'>" +
+            "<div class='logo-container'>" +
+            "<img src='/logo.png'>" +
+            "</div>" +
+
+            "<a href='/admin' class='nav-link'>Painel Geral</a>" +
+            "<a href='/listar' class='nav-link active'>Alunos</a>" +
+            "<a href='/cadastro' class='nav-link'>Cadastrar Aluno</a>" +
+            "<a href='/' class='nav-link logout-btn'>Encerrar Sessão</a>" +
+            "</nav>" +
+
             "<main class='main-content'>" +
-            "<div class='content-card'>" +
+
+            "<div class='page-actions'>" +
+            "<a href='/listar' class='back-btn'>← Voltar para Alunos</a>" +
+            "</div>" +
+
+            "<div class='admin-hero'>" +
+
+           "<p class='data-text'>" +
+            java.time.LocalDate.now().format(
+            java.time.format.DateTimeFormatter.ofPattern(
+            "EEEE, dd 'de' MMMM 'de' yyyy",
+            new java.util.Locale("pt", "BR")
+            )
+            )
+            + "</p>" +
+
             "<h1>Editar Aluno</h1>" +
 
+            "<p class='subtitle'>" +
+            "Atualize os dados cadastrais, horários e informações do aluno." +
+            "</p>" +
+
+            "</div>" +
+
+            "<div class='content-card'>" +
+
             "<form method='POST' action='/editar'>" +
+
             "<input type='hidden' name='id' value='" + rs.getInt("id") + "'>" +
 
+            "<div class='form-group'>" +
             "<label>Nome do aluno</label>" +
             "<input type='text' name='nome' value='" + texto(rs, "nome") + "'>" +
+            "</div>" +
 
+            "<div class='form-group'>" +
             "<label>Patologia</label>" +
             "<input type='text' name='patologia' value='" + texto(rs, "patologia") + "'>" +
+            "</div>" +
 
+            "<div class='form-group'>" +
             "<label>Status do pagamento</label>" +
             "<select name='emDia'>" +
             "<option value='true'>Em dia</option>" +
             "<option value='false'>Pendente</option>" +
             "</select>" +
+            "</div>" +
 
+            "<div class='form-group'>" +
             "<label>Usuário do aluno</label>" +
             "<input type='text' name='usuario' value='" + texto(rs, "usuario") + "'>" +
+            "</div>" +
 
+            "<div class='form-group'>" +
             "<label>Senha do aluno</label>" +
             "<input type='password' name='senha' value='" + texto(rs, "senha") + "'>" +
+            "</div>" +
 
+            "<div class='form-group'>" +
             "<label>Frequência semanal</label>" +
             "<select name='frequencia'>" +
             "<option>" + texto(rs, "frequencia") + "</option>" +
@@ -635,10 +682,14 @@ public class ServidorPilates {
             "<option>4x Semana</option>" +
             "<option>5x Semana</option>" +
             "</select>" +
+            "</div>" +
 
+            "<div class='form-group'>" +
             "<label>Pontos de fidelidade</label>" +
             "<input type='number' name='pontos' value='" + rs.getInt("pontos") + "'>" +
+            "</div>" +
 
+            "<div class='form-group'>" +
             "<label>Status financeiro</label>" +
             "<select name='pagamento'>" +
             "<option>" + texto(rs, "pagamento") + "</option>" +
@@ -646,16 +697,24 @@ public class ServidorPilates {
             "<option>Pendente</option>" +
             "<option>Atrasado</option>" +
             "</select>" +
+            "</div>" +
 
+            "<div class='form-group'>" +
             "<label>Quantidade de aulas realizadas</label>" +
             "<input type='number' name='aulasRealizadas' value='" + rs.getInt("aulas_realizadas") + "'>" +
+            "</div>" +
 
+            "<div class='form-group'>" +
             "<label>Data da aula</label>" +
             "<input type='date' name='dataAula' value='" + dataAula + "'>" +
+            "</div>" +
 
+            "<div class='form-group'>" +
             "<label>Horário da aula</label>" +
             "<input type='time' name='horario' value='" + horario + "'>" +
+            "</div>" +
 
+            "<div class='form-group'>" +
             "<label>Modalidade</label>" +
             "<select name='modalidade'>" +
             "<option>" + modalidade + "</option>" +
@@ -663,21 +722,30 @@ public class ServidorPilates {
             "<option>Funcional</option>" +
             "<option>Pilates e Funcional</option>" +
             "</select>" +
+            "</div>" +
 
+            "<div class='form-group'>" +
             "<label>Exercícios Home Care</label>" +
             "<textarea name='homeCare' rows='6' placeholder='Ex: Alongamento de cadeia posterior - 3 séries de 45 segundos'>" +
             texto(rs, "home_care") +
             "</textarea>" +
+            "</div>" +
 
-            "<br><br>" +
+            "<div style='margin-top:30px;text-align:right;'>" +
             "<button class='btn-primary'>Salvar alterações</button>" +
+            "</div>" +
+
             "</form>" +
             "</div>" +
+
+            "<footer>" +
+            "<p>&copy; 2026 Gindri Pilates. Todos os direitos reservados.</p>" +
+            "</footer>" +
+
             "</main>" +
             "</body>" +
             "</html>";
-    }
-
+}
     static String telaListar(String linhas) {
 
         return "<html>" +
@@ -707,11 +775,13 @@ public class ServidorPilates {
             "<div class='admin-hero'>" +
 
             "<p class='data-text'>" +
-            java.time.LocalDate.now()
-            .format(
-            java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")
-            ) +
-            "</p>" +
+            java.time.LocalDate.now().format(
+            java.time.format.DateTimeFormatter.ofPattern(
+            "EEEE, dd 'de' MMMM 'de' yyyy",
+            new java.util.Locale("pt", "BR")
+            )
+            )
+            + "</p>" +
 
             "<h1>Alunos Cadastrados</h1>" +
 
