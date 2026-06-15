@@ -544,3 +544,235 @@ footer{
     width:auto;
 }
 
+/* ==========================================
+   PADRONIZAÇÃO DAS TELAS
+========================================== */
+
+.section-title{
+    margin-top:32px;
+    margin-bottom:18px;
+
+    padding-bottom:10px;
+
+    border-bottom:1px solid var(--border);
+
+    color:var(--primary-dark);
+
+    font-size:1.1rem;
+    font-weight:700;
+}
+
+.admin-hero h1{
+    font-size:2.2rem;
+    font-weight:700;
+    color:var(--text);
+    margin-bottom:8px;
+}
+
+.admin-hero .data-text{
+    text-transform:capitalize;
+}
+
+.content-card{
+    background:rgba(255,255,255,0.92);
+    backdrop-filter:blur(6px);
+}
+
+.content-card:hover{
+    transition:.2s;
+}
+
+/* ==========================================
+   FORMULÁRIOS
+========================================== */
+
+form{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+}
+
+.form-group{
+    margin-bottom:20px;
+}
+
+label{
+    font-size:14px;
+}
+
+input::placeholder,
+textarea::placeholder{
+    color:#94a3b8;
+}
+
+input:hover,
+select:hover,
+textarea:hover{
+    border-color:var(--primary);
+}
+
+/* ==========================================
+   DIAS DA SEMANA
+========================================== */
+
+.dias-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:12px;
+    margin-top:10px;
+}
+
+.dia-card{
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    padding:14px;
+
+    border:1px solid var(--border);
+
+    border-radius:14px;
+
+    background:white;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+}
+
+.dia-card:hover{
+    border-color:var(--primary);
+    background:#f8fffd;
+    transform:translateY(-2px);
+}
+
+.dia-card input{
+    width:auto;
+}
+
+/* ==========================================
+   TABELAS
+========================================== */
+
+.table-responsive{
+    border-radius:18px;
+}
+
+table{
+    overflow:hidden;
+}
+
+th{
+    font-weight:700;
+}
+
+tbody tr{
+    transition:.2s;
+}
+
+tbody tr:hover{
+    background:#f8fafc;
+}
+
+/* ==========================================
+   BOTÕES
+========================================== */
+
+.btn-primary,
+.action-btn,
+.novo-btn{
+    box-shadow:0 8px 20px rgba(75,167,155,0.18);
+}
+
+.btn-primary:hover,
+.action-btn:hover,
+.novo-btn:hover{
+    transform:translateY(-2px);
+}
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+footer{
+    margin-top:40px;
+    padding-top:20px;
+
+    border-top:1px solid rgba(0,0,0,0.05);
+
+    text-align:center;
+
+    color:#64748b;
+
+    font-size:14px;
+}
+
+/* ==========================================
+   RESPONSIVIDADE EXTRA
+========================================== */
+
+@media(max-width:768px){
+
+    .admin-hero{
+        padding:25px;
+    }
+
+    .admin-hero h1{
+        font-size:1.8rem;
+    }
+
+    .content-card{
+        padding:20px;
+    }
+
+    .dias-grid{
+        grid-template-columns:1fr;
+    }
+
+}
+
+.section-description{
+    color:var(--muted);
+    font-size:14px;
+    margin-top:-10px;
+    margin-bottom:20px;
+}
+
+textarea{
+    resize:vertical;
+    min-height:120px;
+}
+
+.page-actions{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.back-btn{
+    display:inline-flex;
+    align-items:center;
+
+    padding:10px 18px;
+
+    border-radius:12px;
+
+    background:white;
+
+    border:1px solid var(--border);
+
+    color:var(--text);
+
+    text-decoration:none;
+
+    font-weight:600;
+
+    transition:.2s;
+}
+
+.back-btn:hover{
+    border-color:var(--primary);
+    color:var(--primary-dark);
+    transform:translateX(-2px);
+}

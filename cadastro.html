@@ -1,185 +1,437 @@
 <!DOCTYPE html>
+
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Novo Cadastro - Gindri Pilates</title>
+    <title>Cadastrar Novo Aluno - Gindri Pilates</title>
 </head>
 <body>
-    <nav class="sidebar">
-        <div class="logo-container">
-            <img src="/logo.png" alt="Logo">
-        </div>
 
-        <a href="/admin" class="nav-link">Painel</a>
-        <a href="/listar" class="nav-link">Alunos</a>
-        <a href="/cadastro" class="nav-link active">Novo Cadastro</a>
-        <a href="/" class="nav-link logout-btn">Sair</a>
-    </nav>
+```
+<nav class="sidebar">
+    <div class="logo-container">
+        <img src="/logo.png" alt="Logo">
+    </div>
 
-    <main class="main-content">
-        <div class="header">
-            <div>
-                <p id="data-cabecalho" class="data-text"></p>
-                <h1>Cadastrar Novo Aluno</h1>
+    <a href="/admin" class="nav-link">
+        Painel Geral
+    </a>
+
+    <a href="/listar" class="nav-link">
+        Alunos
+    </a>
+
+    <a href="/cadastro" class="nav-link active">
+        Cadastrar Aluno
+    </a>
+
+    <a href="/" class="nav-link logout-btn">
+        Encerrar Sessão
+    </a>
+</nav>
+
+<main class="main-content">
+    <div class="page-actions">
+        <a href="/admin" class="back-btn">
+            Voltar ao Painel
+        </a>
+    </div>
+    <div class="admin-hero">
+
+        <p id="data-cabecalho" class="data-text"></p>
+
+        <h1>
+            Cadastrar Novo Aluno
+        </h1>
+
+        <p class="subtitle">
+            Registre novos alunos e organize seus horários.
+        </p>
+
+    </div>
+
+    <div class="content-card">
+
+        <form action="/salvar" method="POST">
+
+            <h2 class="section-title">
+                Dados do Aluno
+            </h2>
+
+            <p class="section-description">
+                Informações básicas do aluno.
+            </p>
+
+            <div class="form-group">
+                <label for="nome">Nome completo</label>
+
+                <input
+                    type="text"
+                    id="nome"
+                    name="nome"
+                    placeholder="Ex: Maria da Silva"
+                    required>
             </div>
-        </div>
 
-        <div class="content-card">
-            <form action="/salvar" method="POST">
+            <div class="form-group">
+                <label for="patologia">
+                    Patologia / Queixa principal
+                </label>
 
-                <div class="form-group">
-                    <label for="nome">Nome completo</label>
-                    <input type="text" id="nome" name="nome" placeholder="Ex: Maria da Silva" required>
-                </div>
+                <input
+                    type="text"
+                    id="patologia"
+                    name="patologia"
+                    placeholder="Ex: Dor lombar, hérnia..."
+                    required>
+            </div>
 
-                <div class="form-group">
-                    <label for="patologia">Patologia / Queixa principal</label>
-                    <input type="text" id="patologia" name="patologia" placeholder="Ex: Dor lombar, hérnia..." required>
-                </div>
+            <h2 class="section-title">
+                Acesso ao Sistema
+            </h2>
 
-                <div class="form-group">
-                    <label for="emDia">Status do pagamento</label>
-                    <select id="emDia" name="emDia" required>
-                        <option value="true">Pagamento em dia</option>
-                        <option value="false">Pendente / atrasado</option>
-                    </select>
-                </div>
+            <p class="section-description">
+                Defina se o aluno poderá acessar sua área pessoal.
+            </p>
 
-                <div class="form-group">
-                    <label for="acesso">Permitir acesso ao sistema?</label>
-                    <select name="acesso" id="acesso" onchange="toggleLoginFields()">
-                        <option value="nao">Não</option>
-                        <option value="sim">Sim</option>
-                    </select>
-                </div>
+            <div class="form-group">
+                <label for="acesso">
+                    Permitir acesso ao sistema?
+                </label>
 
-                <div id="loginFields" style="display:none;">
-                    <div class="form-group">
-                        <label for="usuario">Usuário do aluno</label>
-                        <input type="text" id="usuario" name="usuario" placeholder="Ex: maria">
-                    </div>
+                <select
+                    name="acesso"
+                    id="acesso"
+                    onchange="toggleLoginFields()">
 
-                    <div class="form-group">
-                        <label for="senha">Senha do aluno</label>
-                        <input type="password" id="senha" name="senha" placeholder="Digite uma senha">
-                    </div>
-                </div>
+                    <option value="nao">
+                        Não
+                    </option>
 
-                <div class="form-group">
-                <label for="frequencia">Frequência semanal</label>
+                    <option value="sim">
+                        Sim
+                    </option>
 
-                <select id="frequencia" name="frequencia" onchange="mostrarDias()">
-                    <option value="">Selecione</option>
-                    <option value="1">1x por semana</option>
-                    <option value="2">2x por semana</option>
-                    <option value="3">3x por semana</option>
-                    <option value="4">4x por semana</option>
-                    <option value="5">5x por semana</option>
                 </select>
             </div>
 
-            <div id="diasContainer" class="form-group" style="display:none;">
-                <label>Dias da semana</label>
+            <div id="loginFields" style="display:none;">
+
+                <div class="form-group">
+                    <label for="usuario">
+                        Usuário do aluno
+                    </label>
+
+                    <input
+                        type="text"
+                        id="usuario"
+                        name="usuario"
+                        placeholder="Ex: maria">
+                </div>
+
+                <div class="form-group">
+                    <label for="senha">
+                        Senha do aluno
+                    </label>
+
+                    <input
+                        type="password"
+                        id="senha"
+                        name="senha"
+                        placeholder="Digite uma senha">
+                </div>
+
+            </div>
+
+            <h2 class="section-title">
+                Plano e Horários
+            </h2>
+
+            <p class="section-description">
+                Organização das aulas e frequência semanal.
+            </p>
+
+            <div class="form-group">
+
+                <label for="frequencia">
+                    Frequência semanal
+                </label>
+
+                <select
+                    id="frequencia"
+                    name="frequencia"
+                    onchange="mostrarDias()">
+
+                    <option value="">
+                        Selecione
+                    </option>
+
+                    <option value="1">
+                        1x por semana
+                    </option>
+
+                    <option value="2">
+                        2x por semana
+                    </option>
+
+                    <option value="3">
+                        3x por semana
+                    </option>
+
+                    <option value="4">
+                        4x por semana
+                    </option>
+
+                    <option value="5">
+                        5x por semana
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div
+                id="diasContainer"
+                class="form-group"
+                style="display:none;">
+
+                <label>
+                    Dias da semana
+                </label>
 
                 <div class="dias-grid">
 
                     <label class="dia-card">
-                        <input type="checkbox" name="dias" value="Segunda">
+                        <input
+                            type="checkbox"
+                            name="dias"
+                            value="Segunda">
                         Segunda
                     </label>
 
                     <label class="dia-card">
-                        <input type="checkbox" name="dias" value="Terça">
+                        <input
+                            type="checkbox"
+                            name="dias"
+                            value="Terça">
                         Terça
                     </label>
 
                     <label class="dia-card">
-                        <input type="checkbox" name="dias" value="Quarta">
+                        <input
+                            type="checkbox"
+                            name="dias"
+                            value="Quarta">
                         Quarta
                     </label>
 
                     <label class="dia-card">
-                        <input type="checkbox" name="dias" value="Quinta">
+                        <input
+                            type="checkbox"
+                            name="dias"
+                            value="Quinta">
                         Quinta
                     </label>
 
                     <label class="dia-card">
-                        <input type="checkbox" name="dias" value="Sexta">
+                        <input
+                            type="checkbox"
+                            name="dias"
+                            value="Sexta">
                         Sexta
                     </label>
+
                 </div>
+
             </div>
 
-                <div class="form-group">
-                    <label for="pontos">Pontos de fidelidade</label>
-                    <input type="number" id="pontos" name="pontos" value="0" min="0">
-                </div>
+            <div class="form-group">
+                <label for="horario">
+                    Horário da aula
+                </label>
 
-                <div class="form-group">
-                    <label for="pagamento">Status financeiro</label>
-                    <select id="pagamento" name="pagamento">
-                        <option>Pago</option>
-                        <option>Pendente</option>
-                        <option>Atrasado</option>
-                    </select>
-                </div>
+                <input
+                    type="time"
+                    id="horario"
+                    name="horario">
+            </div>
 
-                <div class="form-group">
-                    <label for="aulasRealizadas">Quantidade de aulas realizadas</label>
-                    <input type="number" id="aulasRealizadas" name="aulasRealizadas" value="0" min="0">
-                </div>
+            <div class="form-group">
+                <label for="localAtendimento">
+                    Local de Atendimento
+                </label>
 
-                <div class="form-group">
-                    <label for="dataAula">Data da aula</label>
-                    <input type="date" id="dataAula" name="dataAula">
-                </div>
+                <select
+                    id="localAtendimento"
+                    name="localAtendimento"
+                >
+                    <option>Estúdio</option>
+                    <option>Home Care</option>
+                </select>
+            </div>
 
-                <div class="form-group">
-                    <label for="horario">Horário da aula</label>
-                    <input type="time" id="horario" name="horario">
-                </div>
+            <div class="form-group">
+                <label for="modalidade">Modalidade</label>
+                <select id="modalidade" name="modalidade">
+                    <option>Pilates</option>
+                    <option>Funcional</option>
+                    <option>Pilates e Funcional</option>
+                </select>
+            </div>
 
-                <div class="form-group">
-                    <label for="modalidade">Modalidade</label>
-                    <select id="modalidade" name="modalidade">
-                        <option>Pilates</option>
-                        <option>Funcional</option>
-                        <option>Pilates e Funcional</option>
-                    </select>
-                </div>
+            <div class="form-group">
+                <label for="observacoes">Observações</label>
 
-                <div style="margin-top: 30px; text-align: right;">
-                    <button type="submit" class="btn-primary" style="width: auto;">
-                        Salvar cadastro
-                    </button>
-                </div>
-            </form>
-        </div>
+                <textarea
+                    id="observacoes"
+                    name="observacoes"
+                    rows="4"
+                    placeholder="Ex: dor lombar, gestante, restrições médicas, objetivos do aluno..."
+                ></textarea>
+            </div>
 
-        <footer>
-            <p>&copy; 2026 Gindri Pilates. Todos os direitos reservados.</p>
-        </footer>
-    </main>
+            <h2 class="section-title">
+                Financeiro
+            </h2>
 
-    <script>
-        function toggleLoginFields() {
-            const acesso = document.getElementById("acesso").value;
-            const fields = document.getElementById("loginFields");
+            <p class="section-description">
+                Controle de pagamento e fidelidade.
+            </p>
 
-            fields.style.display = acesso === "sim" ? "block" : "none";
-        }
+            <div class="form-group">
+                <label for="emDia">
+                    Status do pagamento
+                </label>
 
-        const opcoesData = {
-            weekday: 'long',
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
-        };
+                <select
+                    id="emDia"
+                    name="emDia"
+                    required>
 
-        document.getElementById('data-cabecalho').innerText =
-            new Date().toLocaleDateString('pt-BR', opcoesData);
-    </script>
+                    <option value="true">
+                        Pagamento em dia
+                    </option>
+
+                    <option value="false">
+                        Pendente / atrasado
+                    </option>
+
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="pagamento">
+                    Status financeiro
+                </label>
+
+                <select
+                    id="pagamento"
+                    name="pagamento">
+
+                    <option>Pago</option>
+                    <option>Pendente</option>
+                    <option>Atrasado</option>
+
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="pontos">
+                    Pontos de fidelidade
+                </label>
+
+                <input
+                    type="number"
+                    id="pontos"
+                    name="pontos"
+                    value="0"
+                    min="0">
+            </div>
+
+            <div class="form-group">
+                <label for="aulasRealizadas">
+                    Quantidade de aulas realizadas
+                </label>
+
+                <input
+                    type="number"
+                    id="aulasRealizadas"
+                    name="aulasRealizadas"
+                    value="0"
+                    min="0">
+            </div>
+
+            <div style="margin-top:30px; text-align:right;">
+
+                <button
+                    type="submit"
+                    class="btn-primary">
+
+                    Salvar Cadastro
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <footer>
+        <p>
+            &copy; 2026 Gindri Pilates. Todos os direitos reservados.
+        </p>
+    </footer>
+
+</main>
+
+<script>
+
+    function toggleLoginFields() {
+
+        const acesso =
+        document.getElementById("acesso").value;
+
+        const fields =
+        document.getElementById("loginFields");
+
+        fields.style.display =
+        acesso === "sim"
+        ? "block"
+        : "none";
+    }
+
+    function mostrarDias() {
+
+        const frequencia =
+        document.getElementById("frequencia");
+
+        const diasContainer =
+        document.getElementById("diasContainer");
+
+        diasContainer.style.display =
+            frequencia.value !== ""
+            ? "block"
+            : "none";
+    }
+
+    const opcoesData = {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    };
+
+    document.getElementById('data-cabecalho').innerText =
+        new Date().toLocaleDateString(
+            'pt-BR',
+            opcoesData
+        );
+
+</script>
+```
+
 </body>
 </html>
