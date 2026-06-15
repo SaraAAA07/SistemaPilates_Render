@@ -1,16 +1,20 @@
-
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 :root{
---primary:#2e8b57;
---primary-dark:#256f46;
---secondary:#20b2aa;
---bg:#f1f5f9;
---sidebar:#ffffff;
+--primary:#4BA79B;
+--primary-dark:#2F7F78;
+--secondary:#8CC8B4;
+
+--bg:#F7FAF9;
+--sidebar:#FFFFFF;
+
 --text:#1e293b;
 --muted:#64748b;
+
 --danger:#ef4444;
 --warning:#f59e0b;
 --success:#22c55e;
---card:#ffffff;
+
+--card:#FFFFFF;
 --border:#e2e8f0;
 }
 
@@ -21,7 +25,7 @@ box-sizing:border-box;
 }
 
 body{
-font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+font-family:'Poppins',sans-serif;
 background:linear-gradient(135deg,#f8fafc,#eefbf5);
 color:var(--text);
 min-height:100vh;
@@ -44,7 +48,7 @@ margin-bottom:35px;
 }
 
 .logo-container img{
-max-width:160px;
+max-width:200px;
 filter:drop-shadow(0 10px 15px rgba(0,0,0,0.08));
 }
 
@@ -94,7 +98,8 @@ gap:10px;
 }
 
 .header h1{
-font-size:2rem;
+font-size:2.2rem;
+font-weight:700;
 color:var(--text);
 margin-top:5px;
 }
@@ -107,16 +112,24 @@ margin-bottom:28px;
 }
 
 .stat-card{
-background:var(--card);
-padding:24px;
-border-radius:22px;
-box-shadow:0 10px 30px rgba(15,23,42,0.06);
-border:1px solid rgba(255,255,255,0.8);
-transition:.25s ease;
+background:rgba(255,255,255,0.88);
+backdrop-filter:blur(8px);
+
+padding:28px;
+
+border-radius:24px;
+
+box-shadow:
+0 10px 30px rgba(0,0,0,0.06);
+
+border:1px solid rgba(255,255,255,0.6);
+
+transition:.3s;
 }
 
+
 .stat-card:hover{
-transform:translateY(-5px);
+transform:translateY(-6px);
 }
 
 .stat-card small{
@@ -130,8 +143,9 @@ margin-bottom:8px;
 }
 
 .stat-card div{
-font-size:2rem;
-font-weight:800;
+font-size:2.8rem;
+font-weight:700;
+line-height:1;
 color:var(--primary-dark);
 }
 
@@ -278,7 +292,9 @@ color:#991b1b;
 }
 
 .login-box{
-background:white;
+background:rgba(255,255,255,0.92);
+backdrop-filter:blur(10px);
+border:1px solid rgba(255,255,255,0.5);
 padding:40px;
 width:100%;
 max-width:430px;
@@ -360,12 +376,12 @@ font-size:1.6rem;
 }
 
 .search-input:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(75,167,155,0.20);
 }
 
 .novo-btn {
-    background: #2563eb;
+    background: var(--primary);
     color: white;
     padding: 12px 18px;
     border-radius: 12px;
@@ -375,7 +391,7 @@ font-size:1.6rem;
 }
 
 .novo-btn:hover {
-    background: #1d4ed8;
+    background: var(--primary-dark);
 }
 
 .logout-btn {
@@ -402,7 +418,6 @@ font-size:1.6rem;
     background: #f1f5f9;
     color: #64748b;
     font-size: 13px;
-    text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
@@ -428,7 +443,7 @@ font-size:1.6rem;
 }
 
 .edit-btn {
-    background: #0ea5e9;
+    background: var(--secondary);
 }
 
 .delete-btn {
@@ -480,5 +495,52 @@ font-size:1.6rem;
     padding: 35px;
     border-radius: 28px;
     margin-bottom: 28px;
+}
+
+footer{
+    margin-top:30px;
+    text-align:center;
+    color:#64748b;
+    font-size:14px;
+}
+
+.subtitle{
+    color:var(--muted);
+    margin-top:8px;
+    font-size:15px;
+}
+
+.dias-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:12px;
+    margin-top:10px;
+}
+
+.dia-card{
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    padding:14px;
+
+    border:1px solid var(--border);
+
+    border-radius:14px;
+
+    background:white;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.dia-card:hover{
+    border-color:var(--primary);
+    transform:translateY(-2px);
+}
+
+.dia-card input{
+    width:auto;
 }
 
