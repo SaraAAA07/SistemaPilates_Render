@@ -695,24 +695,38 @@ public class ServidorPilates {
             "<a href='/admin' class='nav-link'>Painel</a>" +
             "<a href='/listar' class='nav-link active'>Alunos</a>" +
             "<a href='/cadastro' class='nav-link'>Novo Cadastro</a>" +
-            "<a href='javascript:history.back()' class='nav-link'>Voltar</a>" +
             "<a href='/' class='nav-link logout-btn'>Sair</a>" +
             "</nav>" +
 
             "<main class='main-content'>" +
-            "<div class='header alunos-header'>" +
-            "<div>" +
-            "<p class='data-text'>" + LocalDate.now() + "</p>" +
-            "<h1>Alunos cadastrados</h1>" +
+
+            "<div class='page-actions'>" +
+            "<a href='/admin' class='back-btn'>Voltar ao Painel</a>" +
             "</div>" +
 
-            "<div class='header-actions'>" +
+            "<div class='admin-hero'>" +
+
+            "<p class='data-text'>" +
+            java.time.LocalDate.now()
+            .format(
+            java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")
+            ) +
+            "</p>" +
+
+            "<h1>Alunos Cadastrados</h1>" +
+
+            "<p class='subtitle'>" +
+            "Gerencie os alunos, horários e informações cadastradas no sistema." +
+            "</p>" +
+
+            "</div>" +
+
+            "<div class='header-actions' style='margin-bottom:20px;'>" +
             "<input type='text' id='buscarAluno' placeholder='Buscar aluno...' class='search-input'>" +
-            "<a href='/cadastro' class='novo-btn'>+ Novo aluno</a>" +
-            "</div>" +
+            "<a href='/cadastro' class='novo-btn'>Novo Aluno</a>" +
             "</div>" +
 
-            "<div class='content-card tabela-container'>" +
+            "<div class='content-card'>" +
             "<div class='table-responsive'>" +
             "<table class='alunos-table'>" +
             "<thead>" +

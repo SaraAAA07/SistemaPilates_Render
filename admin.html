@@ -1,149 +1,179 @@
 <!DOCTYPE html>
+
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Painel Admin - Gindri Pilates</title>
+    <title>Painel Administrativo - Gindri Pilates</title>
 </head>
 <body>
-    <nav class="sidebar">
-        <div class="logo-container">
-            <img src="/logo.png" alt="Logo">
+
+```
+<nav class="sidebar">
+    <div class="logo-container">
+        <img src="/logo.png" alt="Logo Gindri Pilates">
+    </div>
+
+    <a href="/admin" class="nav-link active">
+        Painel Geral
+    </a>
+
+    <a href="/listar" class="nav-link">
+        Alunos
+    </a>
+
+    <a href="/cadastro" class="nav-link">
+        Cadastrar Aluno
+    </a>
+
+    <a href="/" class="nav-link logout-btn">
+        Encerrar Sessão
+    </a>
+</nav>
+
+<main class="main-content">
+    <div class="page-actions">
+        <a href="/" class="back-btn">
+            Voltar
+        </a>
+    </div>
+    <div class="admin-hero">
+
+        <p id="data-cabecalho" class="data-text"></p>
+
+        <h1 id="saudacao-cabecalho">
+            Carregando...
+        </h1>
+
+        <p class="subtitle">
+            Gerencie alunos, agenda e pagamentos do estúdio.
+        </p>
+
+    </div>
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <small>ALUNOS ATIVOS</small>
+            <div>4</div>
         </div>
 
-        <a href="/admin" class="nav-link active">
-            Painel Geral
-        </a>
+        <div class="stat-card">
+            <small>AULAS DE HOJE</small>
+            <div>4</div>
+        </div>
 
-        <a href="/listar" class="nav-link">
-            Alunos
-        </a>
+        <div class="stat-card">
+            <small>INADIMPLENTES</small>
+            <div style="color: var(--danger)">1</div>
+        </div>
 
-        <a href="/cadastro" class="nav-link">
-            Cadastrar Aluno
-        </a>
-
-        <a href="/" class="nav-link logout-btn">
-            Encerrar Sessão
-        </a>
-    </nav>
-
-    <main class="main-content">
-       <div class="admin-hero">
-
-        <div class="header">
-            <div>
-                <p id="data-cabecalho" class="data-text"></p>
-
-                <h1 id="saudacao-cabecalho">
-                    Carregando...
-                </h1>
-
-                <p class="subtitle">
-                    Gerencie alunos, agenda e pagamentos do estúdio.
-                </p>
-            </div>
+        <div class="stat-card">
+            <small>AULAS REALIZADAS</small>
+            <div>0</div>
         </div>
 
     </div>
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <small>ALUNOS ATIVOS</small>
-                <div>4</div>
+    <div class="content-card">
+
+        <div class="header" style="margin-bottom: 18px;">
+
+            <div>
+                <h2 style="margin-bottom: 5px;">
+                    Agenda de Hoje
+                </h2>
+
+                <p style="color:#64748b;">
+                    Confira os atendimentos agendados para hoje.
+                </p>
             </div>
 
-            <div class="stat-card">
-                <small>AULAS HOJE</small>
-                <div>4</div>
-            </div>
-
-            <div class="stat-card">
-                <small>Inadimplentes</small>
-                <div style="color: var(--danger)">1</div>
-            </div>
-
-            <div class="stat-card">
-                <small>Aulas concluídas</small>
-                <div>0</div>
-            </div>
         </div>
 
-        <div class="content-card">
-            <div class="header" style="margin-bottom: 18px;">
-                <div>
-                    <h2 style="margin-bottom: 5px;">Agenda do Dia</h2>
-                    <p style="color: #64748b;">
-                        Confira os atendimentos agendados para hoje.
-                    </p>
-                </div>
-            </div>
+        <div class="table-responsive">
 
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Horário</th>
-                            <th>Nome</th>
-                            <th>Modalidade</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
+            <table>
 
-                    <tbody>
-                        <tr>
-                            <td>08:00</td>
-                            <td>Maria Clara Oliveira</td>
-                            <td>Pilates</td>
-                            <td>
-                                <span class="badge badge-success">Agendada</span>
-                            </td>
-                        </tr>
+                <thead>
+                    <tr>
+                        <th>Horário</th>
+                        <th>Aluno</th>
+                        <th>Modalidade</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
 
-                        <tr>
-                            <td>09:00</td>
-                            <td>João Pedro Santos</td>
-                            <td>Pilates</td>
-                            <td>
-                                <span class="badge badge-success">Agendada</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                <tbody>
+
+                    <tr>
+                        <td>08:00</td>
+                        <td>Maria Clara Oliveira</td>
+                        <td>Pilates</td>
+                        <td>
+                            <span class="badge badge-success">
+                                Agendada
+                            </span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>09:00</td>
+                        <td>João Pedro Santos</td>
+                        <td>Pilates</td>
+                        <td>
+                            <span class="badge badge-success">
+                                Agendada
+                            </span>
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
         </div>
-    
-        <footer>
-            <p>&copy; 2026 Gindri Pilates. Todos os direitos reservados.</p>
-        </footer>
-    </main>
 
-    <script>
-        const dataAtual = new Date();
+    </div>
 
-        const opcoesData = {
-            weekday: 'long',
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
-        };
+    <footer>
+        <p>
+            &copy; 2026 Gindri Pilates. Todos os direitos reservados.
+        </p>
+    </footer>
 
-        document.getElementById('data-cabecalho').innerText =
-            dataAtual.toLocaleDateString('pt-BR', opcoesData);
+</main>
 
-        const hora = dataAtual.getHours();
+<script>
 
-        let saudacao = "Bom dia";
+    const dataAtual = new Date();
 
-        if (hora >= 12 && hora < 18) {
-            saudacao = "Boa tarde";
-        } else if (hora >= 18) {
-            saudacao = "Boa noite";
-        }
+    const opcoesData = {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    };
 
-        document.getElementById('saudacao-cabecalho').innerText =
-            saudacao + ", Alice";
-    </script>
+    document.getElementById('data-cabecalho').innerText =
+        dataAtual.toLocaleDateString('pt-BR', opcoesData);
+
+    const hora = dataAtual.getHours();
+
+    let saudacao = "Bom dia";
+
+    if (hora >= 12 && hora < 18) {
+        saudacao = "Boa tarde";
+    } else if (hora >= 18) {
+        saudacao = "Boa noite";
+    }
+
+    document.getElementById('saudacao-cabecalho').innerText =
+        saudacao + ", Administrador";
+
+</script>
+```
+
 </body>
 </html>
