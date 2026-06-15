@@ -12,28 +12,50 @@
             <img src="/logo.png" alt="Logo">
         </div>
 
-        <a href="/admin" class="nav-link active">Painel</a>
-        <a href="/listar" class="nav-link">Alunos</a>
-        <a href="/cadastro" class="nav-link">Novo Cadastro</a>
-        <a href="/" class="nav-link logout-btn">Sair</a>
+        <a href="/admin" class="nav-link active">
+            Painel Geral
+        </a>
+
+        <a href="/listar" class="nav-link">
+            Alunos
+        </a>
+
+        <a href="/cadastro" class="nav-link">
+            Cadastrar Aluno
+        </a>
+
+        <a href="/" class="nav-link logout-btn">
+            Encerrar Sessão
+        </a>
     </nav>
 
     <main class="main-content">
+       <div class="admin-hero">
+
         <div class="header">
             <div>
                 <p id="data-cabecalho" class="data-text"></p>
-                <h1 id="saudacao-cabecalho">Carregando...</h1>
+
+                <h1 id="saudacao-cabecalho">
+                    Carregando...
+                </h1>
+
+                <p class="subtitle">
+                    Gerencie alunos, agenda e pagamentos do estúdio.
+                </p>
             </div>
         </div>
 
+    </div>
+
         <div class="stats-grid">
             <div class="stat-card">
-                <small>Alunos ativos</small>
+                <small>ALUNOS ATIVOS</small>
                 <div>4</div>
             </div>
 
             <div class="stat-card">
-                <small>Aulas hoje</small>
+                <small>AULAS HOJE</small>
                 <div>4</div>
             </div>
 
@@ -51,9 +73,9 @@
         <div class="content-card">
             <div class="header" style="margin-bottom: 18px;">
                 <div>
-                    <h2 style="margin-bottom: 5px;">Agenda de hoje</h2>
+                    <h2 style="margin-bottom: 5px;">Agenda do Dia</h2>
                     <p style="color: #64748b;">
-                        Aulas previstas para a data atual.
+                        Confira os atendimentos agendados para hoje.
                     </p>
                 </div>
             </div>
@@ -91,7 +113,7 @@
                 </table>
             </div>
         </div>
-
+    
         <footer>
             <p>&copy; 2026 Gindri Pilates. Todos os direitos reservados.</p>
         </footer>

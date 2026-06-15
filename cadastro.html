@@ -68,15 +68,49 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="frequencia">Frequência semanal</label>
-                    <select id="frequencia" name="frequencia">
-                        <option>1x Semana</option>
-                        <option>2x Semana</option>
-                        <option>3x Semana</option>
-                        <option>4x Semana</option>
-                        <option>5x Semana</option>
-                    </select>
+                <label for="frequencia">Frequência semanal</label>
+
+                <select id="frequencia" name="frequencia" onchange="mostrarDias()">
+                    <option value="">Selecione</option>
+                    <option value="1">1x por semana</option>
+                    <option value="2">2x por semana</option>
+                    <option value="3">3x por semana</option>
+                    <option value="4">4x por semana</option>
+                    <option value="5">5x por semana</option>
+                </select>
+            </div>
+
+            <div id="diasContainer" class="form-group" style="display:none;">
+                <label>Dias da semana</label>
+
+                <div class="dias-grid">
+
+                    <label class="dia-card">
+                        <input type="checkbox" name="dias" value="Segunda">
+                        Segunda
+                    </label>
+
+                    <label class="dia-card">
+                        <input type="checkbox" name="dias" value="Terça">
+                        Terça
+                    </label>
+
+                    <label class="dia-card">
+                        <input type="checkbox" name="dias" value="Quarta">
+                        Quarta
+                    </label>
+
+                    <label class="dia-card">
+                        <input type="checkbox" name="dias" value="Quinta">
+                        Quinta
+                    </label>
+
+                    <label class="dia-card">
+                        <input type="checkbox" name="dias" value="Sexta">
+                        Sexta
+                    </label>
                 </div>
+            </div>
 
                 <div class="form-group">
                     <label for="pontos">Pontos de fidelidade</label>
