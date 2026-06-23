@@ -7,6 +7,7 @@ import java.nio.file.*;
 import java.sql.*;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class ServidorPilates {
@@ -477,8 +478,21 @@ public class ServidorPilates {
             "<main class='main-content'>" +
             "<div class='header admin-hero'>" +
             "<div>" +
-            "<p class='data-text'>" + LocalDate.now() + "</p>" +
-            "<h1>Bem-vinda, Alice</h1>" +
+            "<p class='data-text'>" +
+            LocalDate.now()
+                .format(DateTimeFormatter.ofPattern(
+                    "EEEE, dd 'de' MMMM 'de' yyyy",
+                    new Locale("pt", "BR")
+                ))
+                .replace("segunda-feira", "Segunda-Feira")
+                .replace("terça-feira", "Terça-Feira")
+                .replace("quarta-feira", "Quarta-Feira")
+                .replace("quinta-feira", "Quinta-Feira")
+                .replace("sexta-feira", "Sexta-Feira")
+                .replace("sábado", "Sábado")
+                .replace("domingo", "Domingo")
+                .replace(" de ", " De ")
+            + "</p>" +            "<h1>Bem-vinda, Alice</h1>" +
             "</div>" +
             "</div>" +
 
@@ -545,7 +559,21 @@ public class ServidorPilates {
             "<main class='main-content'>" +
             "<div class='header'>" +
             "<div>" +
-            "<p class='data-text'>" + LocalDate.now() + "</p>" +
+            "<p class='data-text'>" +
+            LocalDate.now()
+                .format(DateTimeFormatter.ofPattern(
+                    "EEEE, dd 'de' MMMM 'de' yyyy",
+                    new Locale("pt", "BR")
+                ))
+                .replace("segunda-feira", "Segunda-Feira")
+                .replace("terça-feira", "Terça-Feira")
+                .replace("quarta-feira", "Quarta-Feira")
+                .replace("quinta-feira", "Quinta-Feira")
+                .replace("sexta-feira", "Sexta-Feira")
+                .replace("sábado", "Sábado")
+                .replace("domingo", "Domingo")
+                .replace(" de ", " De ")
+            + "</p>" +
             "<h1>Olá, " + texto(rs, "nome") + "</h1>" +
             "</div>" +
             "</div>" +
