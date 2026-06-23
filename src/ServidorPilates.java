@@ -734,12 +734,7 @@ public class ServidorPilates {
 
             "<div class='admin-hero'>" +
 
-            "<p class='data-text'>" +
-            java.time.LocalDate.now()
-            .format(
-            java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")
-            ) +
-            "</p>" +
+            "<p class='data-text'>" + dataFormatada() + "</p>" +
 
             "<h1>Alunos Cadastrados</h1>" +
 
@@ -873,6 +868,22 @@ public class ServidorPilates {
 
         return dados;
     }
+
+    static String dataFormatada() {
+    return LocalDate.now()
+        .format(DateTimeFormatter.ofPattern(
+            "EEEE, dd 'de' MMMM 'de' yyyy",
+            new Locale("pt", "BR")
+        ))
+        .replace("segunda-feira", "Segunda-Feira")
+        .replace("terça-feira", "Terça-Feira")
+        .replace("quarta-feira", "Quarta-Feira")
+        .replace("quinta-feira", "Quinta-Feira")
+        .replace("sexta-feira", "Sexta-Feira")
+        .replace("sábado", "Sábado")
+        .replace("domingo", "Domingo")
+        .replace(" de ", " De ");
+}
 
     static void responder(HttpExchange t, String html) throws IOException {
 
